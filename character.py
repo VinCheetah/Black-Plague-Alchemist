@@ -1,12 +1,16 @@
+import status
+
+
+
 class Character:
 
     def __init__(self, config):
-        self.life = ...
+        self.health : int = ...
         self.inventory = ...
         self.fight_skill = config.fight_skill
         self.basic_skill = config.basic_skill
-        self.social_links = {}
-        self.status =
+        self.social_links: dict[Character, int] = {}
+        self.status: status.Status = ...
 
 
 class Alchemist(Character):
@@ -27,7 +31,7 @@ class Jester:
 
 
 
-class SideCharacter:
+class SideCharacter(Character):
     ...
 
 class Carpenter(SideCharacter):

@@ -26,4 +26,17 @@ class SkullIsland:
     ...
 
 
+class Home:
+    ...
+
+    def introduction(self):
+        print("my dad is zombie")
+        print("i need kill dad")
+
+
+
+
+class HomeVillage:
+    ...
+
 
