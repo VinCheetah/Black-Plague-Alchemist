@@ -2,11 +2,12 @@
 name = "black-plague-alchemist"
 version = "0.1.0"
 description = ""
-authors = ["WorstFox <benjamin.duhamel@ens-lyon.fr>"]
+authors = ["VinCheetah <vincent.gardies@ens-lyon.fr>, WorstFox <benjamin.duhamel@ens-lyon.fr>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.10"
+toml = "^0.10.2"
 
 
 [build-system]

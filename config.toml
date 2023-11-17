@@ -1,0 +1,26 @@
+title="default_config"
+
+[general]
+
+
+[character]
+
+    [character.basics]
+
+    [character.fighter]
+
+        [character.fighter.basics]
+
+    [character.playable]
+
+        [character.playable.basics]
+
+            max_health=100
+            defense=0
+            basics_skills={"alchemist"=3, "knight"=1}
+
+
+        [character.playable.alchemist]
+
+            name="Francesco"
+            basics_skills="PotionThrow"
