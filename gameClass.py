@@ -4,7 +4,7 @@ class Game:
 
     def __init__(self):
         self.main_character = []
-        self.place =
+        self.place = ...
         self.group_inventory = []
         self.characters = []
 

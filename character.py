@@ -1,6 +1,7 @@
 import status
 from boundedValue import BoundedValue
 import skills
+import item
 
 
 class Character:
@@ -18,7 +19,7 @@ class PlayableCharacter(Character):
         super().__init__(config)
         self.config = {} | config
         self.health: BoundedValue = BoundedValue(self.config.max_health, 0, self.config.max_health)
-        self.inventory = ...
+        self.inventory: dict[item.Item, int] = self.config.inventory
         self.fight_skill: dict[skills.FightSkill, int] = self.config.fight_skill
         self.basic_skill: dict[skills.Skill, int] = self.config._basic_skill
         self.social_links: dict[Character, int] = self.config._social_links
