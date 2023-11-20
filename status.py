@@ -1,32 +1,35 @@
 class Status:
+
+    def __init__(self, config):
+        self.config = config
+        self.duration: int = self.config.duration #number of turns the status remains
+
+class Neutral(Status):
     ...
 
-class Neutral:
+class Laughing(Status):
     ...
 
-class Laughing:
+class Bleeding(Status):
     ...
 
-class Bleeding:
+class Stunt(Status):
     ...
 
-class Stunt:
+class Poisonned(Status):
     ...
 
-class Poisonned:
+class Plagued(Status):
     ...
 
-class Plagued:
+class Busy(Status):
     ...
 
-class Busy:
+class Sleeping(Status):
     ...
 
-class Sleeping:
+class Motivated(Status):
     ...
 
-class Motivated:
-    ...
-
-class DeMotivated:
+class DeMotivated(Status):
     ...
