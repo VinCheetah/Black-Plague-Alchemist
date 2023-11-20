@@ -1,10 +1,11 @@
 from math import inf
 
+
 class BoundedValue(object):
     def __init__(self, value, minimum=-inf, maximum=inf):
-        self.value: type(value)
-        self.min: float
-        self.max: float
+        self.value = value
+        self.min: float = minimum
+        self.max: float = maximum
         self.__setattr__("min", minimum, check=False)
         self.__setattr__("max", maximum, check=False)
         self.__setattr__("value", value)
