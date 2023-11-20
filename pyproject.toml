@@ -8,6 +8,8 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.10"
 toml = "^0.10.2"
+pygame = "^2.5.2"
+poetry = "^1.7.1"
 
 
 [build-system]
