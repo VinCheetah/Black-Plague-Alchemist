@@ -1,4 +1,8 @@
+import random
+
 import place
+
+import random as rd
 
 class Game:
 
@@ -13,3 +17,8 @@ class Game:
 
     def init_starting(self):
         self.place = place.Home()
+
+    def random_event(self, probability):
+        assert 0 <= probability <= 1
+        return rd.random() < probability
+
