@@ -1,7 +1,16 @@
+import character
+import item
+
+
 class Place:
 
-    def __init__(self):
-        ...
+    def __init__(self, config):
+        self.config = config
+        self.name: str = self.config.name
+        self.characters: list[character.Character] = self.config.characters
+        self.items: dict[item.Item, float] = self.config.items
+        # each item present has a "probability" (can be > 1) to be present
+        self.adjacent_places: list[Place] = self.config.adjacent_places
 
 
 class Tavern(Place):
