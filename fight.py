@@ -1,15 +1,17 @@
 from queue import PriorityQueue
+import console
 
 
 class Fight:
 
     def __init__(self, game, config):
         self.game = game
-        self.config = config
-        self.fight_over = False
+        self.config = game.config.fight.basics | config
         self.escape_probability = self.config.escape_probability
-        self.player_team = ...
-        self.enemy_team = ...
+        self.player_team = self.config.player_team
+        self.enemy_team = self.config.enemy_team
+
+        self.fight_over = False
         self.priority_queue = PriorityQueue(self.player_team.get_size() + self.enemy_team.get_size())
 
     def start(self):
@@ -18,8 +20,15 @@ class Fight:
             self.action(self.priority_queue.get())
         print("Fight is over")
 
+    def request_enemy_target(self):
+        if self.game.io_mode == "console":
+            return self.enemy_team[console.request("Choose your target :", self.enemy_team)]
+        else:
+            raise NotImplementedError
+
     def player_action(self, character):
         character.request_fight_action()
+        self.request_enemy_target()
 
     def enemy_action(self, character):
         ...

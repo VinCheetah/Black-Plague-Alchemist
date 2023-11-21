@@ -13,6 +13,9 @@ class FightSkill(Skill):
         self.action_consumption: int = self.config.action_consumption
         self.cooldown: int = self.config.cooldown
 
+    def applied(self):
+        print("skill have been applied")
+
 
 class Perception:
     ...

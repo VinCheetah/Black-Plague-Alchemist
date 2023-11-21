@@ -2,6 +2,7 @@ import status
 from boundedValue import BoundedValue
 import skills
 import item
+import console
 
 
 class Character:
@@ -19,9 +20,7 @@ class FightingCharacter(Character):
 
     def request_fight_action(self):
         if self.game.io_mode == "console":
-            print("Select an action\n -")
-            print("\n - ".join(fight_skill.name for fight_skill in self.fight_skill))
-            input
+            self.fight_skill[console.request("Choose your next action :", self.fight_skill)].applied()
         else:
             raise NotImplementedError
 
@@ -29,75 +28,82 @@ class FightingCharacter(Character):
 
 class PlayableCharacter(Character):
 
-    def __init__(self, config):
-        super().__init__(config)
+    def __init__(self, game, config):
+        super().__init__(game, config)
         self.config = {} | config
         self.health: BoundedValue = BoundedValue(self.config.max_health, 0, self.config.max_health)
         self.inventory: dict[item.Item, int] = self.config.inventory
-        self.basic_skill: dict[skills.Skill, int] = self.config._basic_skill
-        self.social_links: dict[Character, int] = self.config._social_links
+        self.basic_skill: dict[skills.Skill, int] = self.config.basic_skill
+        self.social_links: dict[Character, int] = self.config.social_links
         self.status: status.Status = ...
 
 
-class Alchemist(Character):
+class Alchemist(PlayableCharacter):
 
-    def __init__(self):
-        super().__init__()
-
-
-class Knight:
-    ...
-
-class Priest:
-    ...
-
-class Jester:
-    ...
+    def __init__(self, game):
+        super().__init__(game, game.config.character.playable.alchemist)
 
 
+class Knight(PlayableCharacter):
+
+    def __init__(self, game):
+        super().__init__(game, game.config.character.playable.knight)
 
 
-class SideCharacter(Character):
+class Priest(PlayableCharacter):
+
+    def __init__(self, game):
+        super().__init__(game, game.config.character.playable.priest)
+
+
+class Jester(PlayableCharacter):
+
+    def __init__(self, game):
+        super().__init__(game, game.config.character.playable.jester)
+
+
+
+class SideCharacter(FightingCharacter):
     ...
 
 class Carpenter(SideCharacter):
     ...
 
-class BlackSmith:
+class BlackSmith(SideCharacter):
     ...
 
-class Doctor:
+class Doctor(SideCharacter):
     ...
 
-class Peasant:
+class Peasant(SideCharacter):
     ...
 
-class Fanatic:
+class Fanatic(SideCharacter):
     ...
 
-class Baron:
+class Baron(SideCharacter):
     ...
 
 
 
 
-class Monster:
+class Monster(FightingCharacter):
     ...
 
 class Plagued(Monster):
     ...
 
-class Dragon:
+class Dragon(Monster):
     ...
 
-class PlaguedZombie:
+class PlaguedZombie(Monster):
     ...
 
-class PlaguedDog:
+class PlaguedDog(Monster):
     ...
 
-class PlaguedRat:
+class PlaguedRat(Monster):
     ...
 
-class PlaguedSpider:
+class PlaguedSpider(Monster):
     ...
