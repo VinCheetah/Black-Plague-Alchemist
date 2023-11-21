@@ -25,3 +25,10 @@ title="default_config"
             name="Francesco"
             basics_skills="PotionThrow"
 
+        [character.playable.knight]
+
+        [character.playable.priest]
+
+        [character.playable.jester]
+
+

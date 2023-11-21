@@ -9,14 +9,14 @@ class Character:
 
     def __init__(self, game, config):
         self.game = game
-        self.config = config
+        self.config = game.config.character.basics | config
 
 
 class FightingCharacter(Character):
 
     def __init__(self, game, config):
-        super().__init__(game, config)
-        self.fight_skill: dict[skills.FightSkill, int] = self.config.fight_skill
+        super().__init__(game, game.config.fighter.basics | config)
+        self.fight_skill: list[skills.FightSkill] = self.config.fight_skill
 
     def request_fight_action(self):
         if self.game.io_mode == "console":
@@ -25,12 +25,10 @@ class FightingCharacter(Character):
             raise NotImplementedError
 
 
-
 class PlayableCharacter(Character):
 
     def __init__(self, game, config):
-        super().__init__(game, config)
-        self.config = {} | config
+        super().__init__(game, game.config.playable.basics | config)
         self.health: BoundedValue = BoundedValue(self.config.max_health, 0, self.config.max_health)
         self.inventory: dict[item.Item, int] = self.config.inventory
         self.basic_skill: dict[skills.Skill, int] = self.config.basic_skill
