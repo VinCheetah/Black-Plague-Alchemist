@@ -18,7 +18,8 @@ class Game:
     def init_starting(self):
         self.place = place.Home()
 
-    def random_event(self, probability):
+    @staticmethod
+    def random_event(probability):
         assert 0 <= probability <= 1
         return rd.random() < probability
 

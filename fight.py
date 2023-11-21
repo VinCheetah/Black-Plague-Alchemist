@@ -1,5 +1,6 @@
 from queue import PriorityQueue
 import console
+import random as rd
 
 
 class Fight:
@@ -10,6 +11,7 @@ class Fight:
         self.escape_probability = self.config.escape_probability
         self.player_team = self.config.player_team
         self.enemy_team = self.config.enemy_team
+        self.enemy_tactic = self.config.enemy_tactic
 
         self.fight_over = False
         self.priority_queue = PriorityQueue(self.player_team.get_size() + self.enemy_team.get_size())
@@ -20,18 +22,33 @@ class Fight:
             self.action(self.priority_queue.get())
         print("Fight is over")
 
-    def request_enemy_target(self):
+    def get_targets(self, skill, character):
+        if skill.mono_target and skill.target_type == "enemy":
+            return self.enemy_team if character in self.player_team else self.player_team
+        elif skill.mono_targert and skill.target_type == "ally":
+            return self.player_team if character in self.player_team else self.enemy_team
+        else:
+            raise NotImplementedError
+
+    def request_target(self, skill, character):
+        targets = self.get_targets(skill, character)
         if self.game.io_mode == "console":
-            return self.enemy_team[console.request("Choose your target :", self.enemy_team)]
+            return targets[console.request("Choose your target :", targets)]
         else:
             raise NotImplementedError
 
     def player_action(self, character):
-        character.request_fight_action()
-        self.request_enemy_target()
+        skill = character.request_fight_action()
+        target = self.request_target(skill, character)
+        skill.applied(target)
 
     def enemy_action(self, character):
-        ...
+        if self.enemy_tactic == "random":
+            skill = rd.choice(character.fight_skills)
+            target = rd.choice(self.get_targets(skill, character))
+            skill.applied(target)
+        else:
+            raise NotImplementedError
 
     def action(self, character):
         if character in self.player_team:
@@ -39,7 +56,7 @@ class Fight:
         elif character in self.enemy_team:
             self.enemy_action(character)
         else:
-            raise ValueError
+            raise NotImplementedError
 
     def escape(self):
         if self.game.random_event(self.escape_probability):
