@@ -1,12 +1,15 @@
 import random
-
+from config import default_config
 import place
 
 import random as rd
 
+
+
 class Game:
 
     def __init__(self):
+        self.config = default_config
         self.main_character = []
         self.place = ...
         self.group_inventory = []

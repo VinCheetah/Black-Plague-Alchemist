@@ -11,13 +11,18 @@ title="default_config"
 
         [character.fighter.basics]
 
+            fight_skill=["Punch"]
+            attack_rate=100
+
     [character.playable]
 
         [character.playable.basics]
 
             max_health=100
             defense=0
-            basics_skills={"alchemist"=3, "knight"=1}
+            basic_skill={"alchemist"=3, "knight"=1}
+            social_links={}
+            inventory={}
 
 
         [character.playable.alchemist]
@@ -30,5 +35,31 @@ title="default_config"
         [character.playable.priest]
 
         [character.playable.jester]
+
+    [character.monster]
+
+        [character.monster.basics]
+
+        [character.monster.plagued]
+
+            name="Plagued"
+
+[skill]
+
+    [skill.basics]
+
+    [skill.fight]
+
+        [skill.fight.basics]
+
+        [skill.fight.punch]
+
+
+[fight]
+
+    [fight.basics]
+
+        escape_probability=0.8
+        enemy_tactic="random"
 
 

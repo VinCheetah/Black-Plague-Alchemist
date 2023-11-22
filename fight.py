@@ -14,12 +14,17 @@ class Fight:
         self.enemy_tactic = self.config.enemy_tactic
 
         self.fight_over = False
-        self.priority_queue = PriorityQueue(self.player_team.get_size() + self.enemy_team.get_size())
+        self.priority_queue = PriorityQueue(len(self.player_team) + len(self.enemy_team))
+        for character in self.enemy_team:
+            self.priority_queue.put_nowait((character.attack_rate, character))
 
     def start(self):
         print("Fight have started")
         while not self.fight_over:
-            self.action(self.priority_queue.get())
+            time, character = self.priority_queue.get_nowait()
+            print(f"{character.name} is doing an action")
+            self.action(character)
+            self.priority_queue.put_nowait((time + character.attack_rate, character))
         print("Fight is over")
 
     def get_targets(self, skill, character):
@@ -44,7 +49,7 @@ class Fight:
 
     def enemy_action(self, character):
         if self.enemy_tactic == "random":
-            skill = rd.choice(character.fight_skills)
+            skill = rd.choice(character.fight_skill)
             target = rd.choice(self.get_targets(skill, character))
             skill.applied(target)
         else:

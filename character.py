@@ -10,17 +10,19 @@ class Character:
     def __init__(self, game, config):
         self.game = game
         self.config = game.config.character.basics | config
+        self.name = self.config.name
 
 
 class FightingCharacter(Character):
 
     def __init__(self, game, config):
-        super().__init__(game, game.config.fighter.basics | config)
+        super().__init__(game, game.config.character.fighter.basics | config)
         self.fight_skill: list[skills.FightSkill] = self.config.fight_skill
+        self.attack_rate: int = self.config.attack_rate
 
     def request_fight_action(self):
         if self.game.io_mode == "console":
-            self.fight_skill[console.request("Choose your next action :", self.fight_skill)].applied()
+            self.fight_skill[console.request("Choose your next action :", self.fight_skill)]
         else:
             raise NotImplementedError
 
@@ -28,7 +30,7 @@ class FightingCharacter(Character):
 class PlayableCharacter(Character):
 
     def __init__(self, game, config):
-        super().__init__(game, game.config.playable.basics | config)
+        super().__init__(game, game.config.character.playable.basics | config)
         self.health: BoundedValue = BoundedValue(self.config.max_health, 0, self.config.max_health)
         self.inventory: dict[item.Item, int] = self.config.inventory
         self.basic_skill: dict[skills.Skill, int] = self.config.basic_skill
@@ -86,10 +88,14 @@ class Baron(SideCharacter):
 
 
 class Monster(FightingCharacter):
-    ...
+
+    def __init__(self, game, config):
+        super().__init__(game, game.config.character.monster.basics | config)
 
 class Plagued(Monster):
-    ...
+
+    def __init__(self, game):
+        super().__init__(game, game.config.character.monster.plagued)
 
 class Dragon(Monster):
     ...
