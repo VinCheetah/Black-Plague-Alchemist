@@ -59,7 +59,7 @@ class Recipe(Item):
 class WoodStick(Resource):
 
     def __init__(self, game):
-        super().__init__(game, game.config.item.resource.woodstick)
+        super().__init__(game, game.config.item.resource.wood_stick)
 
 
 class Iron(Resource):
