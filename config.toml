@@ -35,6 +35,8 @@ title="default_config"
 
         [character.playable.knight]
 
+            name="Lancelot"
+
         [character.playable.priest]
 
         [character.playable.jester]
