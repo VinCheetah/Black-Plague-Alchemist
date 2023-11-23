@@ -28,6 +28,17 @@ class Game:
         assert 0 <= probability <= 1
         return rd.random() < probability
 
+    def add_item(self, item, nb):
+        if item not in self.inventory:
+            self.inventory[item] = 0
+        self.inventory[item] += nb
+
+    def rm_item(self, item, nb):
+        if item in self.inventory:
+            self.inventory[item] -= nb
+            if self.inventory[item] <= 0:
+                del self.inventory[item]
+
     def check_ingredients(self, recipe, nb_prod):
         for (item, i) in recipe.ingredients:
             if item not in self.inventory or self.inventory[item] < i * nb_prod:
@@ -43,9 +54,7 @@ class Game:
                     raise NotImplementedError
                 if ans:
                     for (item, i) in recipe.ingredients:
-                        self.inventory[item] -= i * nb_prod
-                        if self.inventory[item] == 0:
-                            del self.inventory[item]
+                        self.rm_item(item, i * nb_prod)
                     for (item, i) in recipe.products:
-                        self.inventory[item] += i
+                        self.add_item(item, i * nb_prod)
                 print(f"{recipe.product} have been created!")
