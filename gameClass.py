@@ -19,7 +19,7 @@ class Game:
         self.main_character = []
         self.place = ...
         self.inventory: dict[item.Item, int] = self.config.general.inventory
-        self.known_recipe: list[item.Item] = self.config.general.known_recipe
+        self.known_recipe: list[item.Craftable] = self.config.general.known_recipe
         self.characters = []
 
     def init_objects(self):
@@ -66,15 +66,15 @@ class Game:
             if self.inventory[item] <= 0:
                 del self.inventory[item]
 
-    def check_ingredients(self, recipe, nb_prod):
-        for (item, i) in recipe.ingredients:
+    def check_ingredients(self, recipe, nb_prod=1):
+        for (item, i) in recipe.items():
             if item not in self.inventory or self.inventory[item] < i * nb_prod:
                 return False
         return True
 
     def max_available(self, recipe):
         max_occ = inf
-        for (item, i) in recipe.ingredients:
+        for (item, i) in recipe.items():
             if item not in self.inventory:
                 max_occ = 0
             else:
@@ -82,17 +82,16 @@ class Game:
         return max_occ
 
     def item_creation(self):
-        available_recipe = [recipe for recipe in self.known_recipe if self.check_ingredients((recipe))]
+        available_recipe = [item for item in self.known_recipe if self.check_ingredients(item.recipe)]
         if self.io_mode == "console":
-            chosen_recipe = available_recipe[console.request("Which recipe to perform? :", available_recipe)]
-            max_occ = self.max_available(chosen_recipe)
+            chosen_item = available_recipe[console.request("Which recipe to perform? :", available_recipe)]
+            max_occ = self.max_available(chosen_item.recipe)
             chosen_occ = console.request("How many times to perform? :", [i for i in range(max_occ + 1)])
-            ans = console.answer_yn(f"Create {chosen_occ} {chosen_recipe.products}? :")
+            ans = console.answer_yn(f"Create {chosen_occ} {chosen_item}? :")
             if ans:
-                for (item, i) in chosen_recipe.ingredients:
+                for (item, i) in chosen_item.recipe:
                     self.rm_item(item, i * chosen_occ)
-                for (item, i) in chosen_recipe.products:
-                    self.add_item(item, i * chosen_occ)
-            print(f"{chosen_recipe.product} have been created!")
+                self.add_item(chosen_item, * chosen_occ)
+            print(f"{chosen_occ} {chosen_item} have been created!")
         else:
             raise NotImplementedError
