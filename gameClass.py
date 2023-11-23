@@ -14,6 +14,7 @@ class Game:
 
     def __init__(self):
         self.config = default_config
+        self.io_mode = "console"
         self.init_objects()
         self.main_character = []
         self.place = ...
@@ -38,7 +39,6 @@ class Game:
         self.wood_stick = item.WoodStick(self)
         self.iron = item.Iron(self)
         self.iron_sword = item.IronSword(self)
-        self.iron_sword_recipe = item.IronSwordRecipe(self)
 
     def init_status(self):
         self.neutral = status.Neutral(self)

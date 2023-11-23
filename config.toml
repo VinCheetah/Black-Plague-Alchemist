@@ -70,7 +70,19 @@ title="default_config"
 
 [status]
 
+    [status.basics]
+
+        duration=inf
+
+    [status.neutral]
+
 [item]
+
+    [item.basics]
+
+        name="unknown_name"
+        rarity=0
+        description="unknow_description"
 
     [item.craftable]
 
@@ -79,43 +91,11 @@ title="default_config"
             known=false
             recipe={}
 
-    [item.basics]
-
-        name="unknown_name"
-        rarity=0
-        description="unknow_description"
 
     [item.resource]
 
         [item.resource.basics]
 
-        [item.resource.wood_stick]
-
-            name="Wood Stick"
-            description="Pretty useless wood stick found anywhere there are trees"
-            recipe=[]
-
-        [item.resource.iron]
-
-
-    [item.equipment]
-
-        [item.equipment.basics]
-
-            durability=100
-            position="unknown_position"
-            additional_skill=[]
-
-        [item.equipment.weapon]
-
-            [item.equipment.weapon.basics]
-
-            [item.equipment.weapon.iron_sword]
-
-
-    [item.consumable]
-
-        [item.consumable.basics]
 
         [item.resource.iron]
 
@@ -126,6 +106,13 @@ title="default_config"
 
             name="Iron Sword Recipe"
             description="Recipe for the creation of Iron Sword"
+
+        [item.resource.wood_stick]
+
+            name="Wood Stick"
+            description="Pretty useless wood stick found anywhere there are trees"
+            recipe=[]
+
 
     [item.equipment]
 
@@ -148,6 +135,14 @@ title="default_config"
                 name="Iron Sword"
                 description="Slicing sword, not very powerful, but a great first companion"
                 recipe={"*iron"=1, "*wood_stick"=1}
+
+
+
+    [item.consumable]
+
+        [item.consumable.basics]
+
+
 
 
 

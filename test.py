@@ -13,9 +13,8 @@ def simu_fight():
 
 def simu_creation():
     new_game = gameClass.Game()
-    new_game.add_item(item.Iron)
-    new_game.add_item(item.WoodStick)
-    new_game.add_item(item.IronSwordRecipe)
+    new_game.add_item(new_game.iron)
+    new_game.add_item(new_game.wood_stick)
     new_game.item_creation()
 
 

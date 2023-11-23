@@ -1,11 +1,15 @@
 class Status:
 
-    def __init__(self, config):
-        self.config = config
+    def __init__(self, game, config):
+        self.game = game
+        self.config = game.config.status.basics | config
         self.duration: int = self.config.duration #number of turns the status remains
 
 class Neutral(Status):
-    ...
+
+    def __init__(self, game):
+        super().__init__(game, game.config.status.neutral)
+
 
 class Laughing(Status):
     ...
