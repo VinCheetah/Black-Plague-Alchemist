@@ -14,7 +14,8 @@ class Item:
 class Craftable:
 
     def __init__(self, game, config):
-        self.recipe: list[Item] = config.recipe
+        config |= game.item.craftable.basics
+        self.recipe: list[(Item, int)] = config.recipe
 
 
 class Equipment(Item):

@@ -72,12 +72,17 @@ title="default_config"
 
 [item]
 
+    [item.craftable]
+
+        [item.craftable.basics]
+
+            recipe=[]
+
     [item.basics]
 
         name="unknown_name"
         rarity=0
         description="unknow_description"
-
 
     [item.resource]
 
@@ -111,5 +116,42 @@ title="default_config"
 
         [item.consumable.basics]
 
+        [item.resource.iron]
 
+            name="Iron"
+            description="Common mineral used for armors and weapon"
+
+    [item.equipment]
+
+        [item.equipment.basics]
+
+            durability=0
+            position="unknown_position"
+            additional_skill=[]
+
+        [item.equipment.weapon]
+
+            [item.equipment.weapon.basics]
+
+                direct_damage=[0,0]
+                effects=[]
+
+            [item.equipment.weapon.iron_sword]
+
+                name="Iron Sword"
+                description="Slicing sword, not very powerful, but a great first companion"
+                recipe=[["*iron", 1], ["*wood_stick", 1]]
+
+    [item.recipe]
+
+        [item.recipe.basics]
+
+            ingredients=[]
+            products=[]
+
+        [item.recipe.iron_sword_recipe]
+
+            name="Iron Sword Recipe"
+            description="Recipe for the creation of Iron Sword"
+            ingredients=[["*iron", 1], ["*wood_stick", 1]]
 
