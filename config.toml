@@ -87,6 +87,29 @@ title="default_config"
 
             name="Wood Stick"
             description="Pretty useless wood stick found anywhere there are trees"
-            recipe=
+            recipe=[]
+
+        [item.resource.iron]
+
+
+    [item.equipment]
+
+        [item.equipment.basics]
+
+            durability=100
+            position="unknown_position"
+            additional_skill=[]
+
+        [item.equipment.weapon]
+
+            [item.equipment.weapon.basics]
+
+            [item.equipment.weapon.iron_sword]
+
+
+    [item.consumable]
+
+        [item.consumable.basics]
+
 
 

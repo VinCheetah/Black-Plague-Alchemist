@@ -20,7 +20,7 @@ class Craftable:
 class Equipment(Item):
 
     def __init__(self, game, config):
-        super().__init__(game, config)
+        super().__init__(game, game.config.item.equipment.basics | config)
         self.durability: float = self.config.durability
         self.position: str = self.config.position  # where to put the equipment
         self.additional_skill: list[skills.Skill] = self.config.additional_skill
@@ -29,7 +29,7 @@ class Equipment(Item):
 class Weapon(Equipment):
 
     def __init__(self, game, config):
-        super().__init__(game, config)
+        super().__init__(game, game.config.item.equipment.weapon.basics | config)
         self.direct_damage: (int, int) = self.config.direct_damage
         self.effects: list[skills.Skill] = self.config.effects
 
@@ -37,7 +37,7 @@ class Weapon(Equipment):
 class Consumable(Item):
 
     def __init__(self, game, config):
-        super().__init__(game, config)
+        super().__init__(game, game.config.item.consumable.basics | config)
         self.effects: list[skills.Skill] = self.config.effects
 
 
@@ -70,7 +70,7 @@ class Iron(Resource):
 class IronSword(Weapon, Craftable):
 
     def __init__(self, game):
-        super().__init__(game, game.config.item.equipment.weapon.ironsword)
+        super().__init__(game, game.config.item.equipment.weapon.iron_sword)
 
 
 class IronSwordRecipe(Recipe):
