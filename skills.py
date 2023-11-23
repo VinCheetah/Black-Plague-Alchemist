@@ -17,6 +17,8 @@ class FightSkill(Skill):
         self.action_consumption: int = self.config.action_consumption
         self.cooldown: int = self.config.cooldown
         self.mono_target = True
+        self.target_type: str = self.config.target_type # self, enemy, ally, all
+        self.target_number: int = self.config.target_number # [1, +inf]
 
     def applied(self, target):
         print(f"{self.name} have been applied to {target.name}")
@@ -47,3 +49,9 @@ class SwordSlash:
 
 class PotionThrow:
     ...
+
+
+class Meteor(FightSkill):
+
+    def __init__(self, game):
+        super().__init__(game, game.config.skill.fight.meteor)

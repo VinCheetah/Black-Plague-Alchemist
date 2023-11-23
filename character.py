@@ -32,11 +32,11 @@ class PlayableCharacter(Character):
     def __init__(self, game, config):
         super().__init__(game, game.config.character.playable.basics | config)
         self.health: BoundedValue = BoundedValue(self.config.max_health, 0, self.config.max_health)
-        self.inventory: dict[item.Item, int] = self.config.inventory
+        self.equipment: dict[str, item.Equipment] = self.config.equipment
+        # at most one equipment for each equipment slots
         self.basic_skill: dict[skills.Skill, int] = self.config.basic_skill
         self.social_links: dict[Character, int] = self.config.social_links
-        self.status: status.Status = ...
-
+        self.status: status.Status = self.config.status
 
 class Alchemist(PlayableCharacter):
 

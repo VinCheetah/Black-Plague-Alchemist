@@ -30,7 +30,7 @@ class Fight:
     def get_targets(self, skill, character):
         if skill.mono_target and skill.target_type == "enemy":
             return self.enemy_team if character in self.player_team else self.player_team
-        elif skill.mono_targert and skill.target_type == "ally":
+        elif skill.mono_target and skill.target_type == "ally":
             return self.player_team if character in self.player_team else self.enemy_team
         else:
             raise NotImplementedError
