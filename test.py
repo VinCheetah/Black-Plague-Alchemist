@@ -1,7 +1,7 @@
 import gameClass
 import fight
 import character
-
+import item
 
 def simu_fight():
     new_game = gameClass.Game()
@@ -9,4 +9,14 @@ def simu_fight():
     new_fight.start()
 
 
-simu_fight()
+# simu_fight()
+
+def simu_creation():
+    new_game = gameClass.Game()
+    new_game.add_item(item.Iron)
+    new_game.add_item(item.WoodStick)
+    new_game.add_item(item.IronSwordRecipe)
+    new_game.item_creation()
+
+
+simu_creation()
