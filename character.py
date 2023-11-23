@@ -22,7 +22,7 @@ class FightingCharacter(Character):
 
     def request_fight_action(self):
         if self.game.io_mode == "console":
-            self.fight_skill[console.request("Choose your next action :", self.fight_skill)]
+            return self.fight_skill[console.request("Choose your next action :", self.fight_skill)]
         else:
             raise NotImplementedError
 
