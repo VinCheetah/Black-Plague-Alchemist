@@ -1,9 +1,8 @@
 import random
 from config import default_config
 import place
-
+import item
 import random as rd
-
 
 
 class Game:
@@ -12,7 +11,8 @@ class Game:
         self.config = default_config
         self.main_character = []
         self.place = ...
-        self.group_inventory = []
+        self.inventory: dict[item.Item, int] = self.config.inventory
+        self.known_recipe: list[item.Recipe] = self.config.known_recipe
         self.characters = []
 
     def start(self):
@@ -26,3 +26,7 @@ class Game:
         assert 0 <= probability <= 1
         return rd.random() < probability
 
+    def item_creation(self):
+        for recipe in self.known_recipe:
+            if self.check_ingredients(recipe, self.inventory):
+                print(f"Create {recipe.product}")

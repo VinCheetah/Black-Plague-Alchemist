@@ -9,6 +9,7 @@ class Item:
         self.rarity: float = self.config.rarity
         self.description: str = self.config.description
         self.recipe: list[Item] = self.config.recipe
+        self.durability: float = self.config.durability
 
 
 class Equipment(Item):
@@ -39,3 +40,11 @@ class Resource(Item):
 
     def __init__(self, config):
         super().__init__(config)
+
+
+class Recipe(Item):
+
+    def __init__(self, config):
+        super().__init__(config)
+        self.ingredients: list[(Item, int)] = self.config.ingredients
+        self.product: list[(Item, int)] = self.config.ingredients
