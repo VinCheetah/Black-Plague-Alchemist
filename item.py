@@ -9,7 +9,12 @@ class Item:
         self.name: str = self.config.name
         self.rarity: float = self.config.rarity
         self.description: str = self.config.description
-        self.recipe: list[Item] = self.config.recipe
+
+
+class Craftable:
+
+    def __init__(self, game, config):
+        self.recipe: list[Item] = config.recipe
 
 
 class Equipment(Item):
@@ -39,7 +44,7 @@ class Consumable(Item):
 class Resource(Item):
 
     def __init__(self, game, config):
-        super().__init__(game, config)
+        super().__init__(game, game.config.item.resource.basics | config)
 
 
 class Recipe(Item):
@@ -62,7 +67,7 @@ class Iron(Resource):
         super().__init__(game, game.config.item.resource.iron)
 
 
-class IronSword(Weapon):
+class IronSword(Weapon, Craftable):
 
     def __init__(self, game):
         super().__init__(game, game.config.item.equipment.weapon.ironsword)
