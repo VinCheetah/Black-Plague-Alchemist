@@ -2,6 +2,8 @@ title="default_config"
 
 [general]
 
+    inventory=[]
+    known_recipe=[]
 
 [character]
 
@@ -11,7 +13,7 @@ title="default_config"
 
         [character.fighter.basics]
 
-            fight_skill=["Punch"]
+            fight_skill=["*Punch"]
             attack_rate=100
 
     [character.playable]
@@ -20,9 +22,10 @@ title="default_config"
 
             max_health=100
             defense=0
+            equipment={}
             basic_skill={"alchemist"=3, "knight"=1}
             social_links={}
-            inventory={}
+            status="*Neutral"
 
 
         [character.playable.alchemist]
@@ -61,5 +64,8 @@ title="default_config"
 
         escape_probability=0.8
         enemy_tactic="random"
+
+
+[status]
 
 

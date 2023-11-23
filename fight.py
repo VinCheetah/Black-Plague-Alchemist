@@ -28,6 +28,7 @@ class Fight:
         print("Fight is over")
 
     def get_targets(self, skill, character):
+        print(f"Looking for target for targets of {skill.name} made by {character.name}")
         if skill.mono_target and skill.target_type == "enemy":
             return self.enemy_team if character in self.player_team else self.player_team
         elif skill.mono_target and skill.target_type == "ally":

@@ -3,8 +3,16 @@ import collections.abc
 import random
 from collections import UserDict
 
+import skills
+import character
+import status
+import place
+import item
+
 
 class Config(UserDict):
+
+    libs = {skills, character, status, place, item}
 
     @classmethod
     def get_default(cls):
@@ -20,6 +28,12 @@ class Config(UserDict):
         if "mini_" + name in self.data and "maxi_" + name in self.data:
             return random.uniform(self.data["mini_" + name], self.data["maxi_" + name])
         elif name in self.data:
+            if type(self.data[name]) is str and self.data[name][0] == "*":
+                new_name = self.data[name][1:]
+                for lib in self.libs:
+                    if new_name in lib.__dict__:
+                        return getattr(lib, new_name)
+
             return self.data[name]
         else:
             raise AttributeError(name)

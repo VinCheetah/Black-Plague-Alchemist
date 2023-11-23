@@ -64,6 +64,7 @@ class Jester(PlayableCharacter):
 
 
 class SideCharacter(FightingCharacter):
+
     ...
 
 class Carpenter(SideCharacter):
