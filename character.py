@@ -1,5 +1,5 @@
-import status
 from boundedValue import BoundedValue
+import status
 import skills
 import item
 import console
@@ -37,6 +37,7 @@ class PlayableCharacter(Character):
         self.basic_skill: dict[skills.Skill, int] = self.config.basic_skill
         self.social_links: dict[Character, int] = self.config.social_links
         self.status: status.Status = self.config.status
+
 
 class Alchemist(PlayableCharacter):
 

@@ -1,6 +1,8 @@
 import random
 
+import character
 import console
+import status
 from config import default_config
 import place
 import item
@@ -12,11 +14,34 @@ class Game:
 
     def __init__(self):
         self.config = default_config
+        self.init_objects()
         self.main_character = []
         self.place = ...
         self.inventory: dict[item.Item, int] = self.config.general.inventory
         self.known_recipe: list[item.Recipe] = self.config.general.known_recipe
         self.characters = []
+
+    def init_objects(self):
+        self.init_characters()
+        self.init_items()
+        self.init_status()
+        # self.init_place()
+        # self.init_status()
+
+    def init_characters(self):
+        self.alchemist = character.Alchemist(self)
+        self.knight = character.Knight(self)
+
+        self.plagued = character.Plagued(self)
+
+    def init_items(self):
+        self.wood_stick = item.WoodStick(self)
+        self.iron = item.Iron(self)
+        self.iron_sword = item.IronSword(self)
+        self.iron_sword_recipe = item.IronSwordRecipe(self)
+
+    def init_status(self):
+        self.neutral = status.Neutral(self)
 
     def start(self):
         self.init_starting()

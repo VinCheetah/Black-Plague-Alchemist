@@ -2,7 +2,7 @@ title="default_config"
 
 [general]
 
-    inventory=[]
+    inventory={}
     known_recipe=[]
 
 [character]
@@ -23,15 +23,15 @@ title="default_config"
             max_health=100
             defense=0
             equipment={}
-            basic_skill={"alchemist"=3, "knight"=1}
-            social_links={}
-            status="*Neutral"
+            social_links={"*alchemist"=3, "*knight"=1}
+            basic_skill={}
+            status="*neutral"
 
 
         [character.playable.alchemist]
 
             name="Francesco"
-            basics_skills="PotionThrow"
+            basics_skills=["*potion_throw"]
 
         [character.playable.knight]
 
