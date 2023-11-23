@@ -18,7 +18,7 @@ class Game:
         self.main_character = []
         self.place = ...
         self.inventory: dict[item.Item, int] = self.config.general.inventory
-        self.known_recipe: list[item.Recipe] = self.config.general.known_recipe
+        self.known_recipe: list[item.Item] = self.config.general.known_recipe
         self.characters = []
 
     def init_objects(self):

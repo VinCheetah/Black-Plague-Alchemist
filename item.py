@@ -15,7 +15,8 @@ class Craftable:
 
     def __init__(self, game, config):
         config |= game.item.craftable.basics
-        self.recipe: list[(Item, int)] = config.recipe
+        self.known: bool = config.known
+        self.recipe: dict[Item, int] = config.recipe
 
 
 class Equipment(Item):
@@ -31,7 +32,8 @@ class Weapon(Equipment):
 
     def __init__(self, game, config):
         super().__init__(game, config)
-        self.direct_damage: (int, int) = self.config.direct_damage
+        self.mini_damage: int = self.config.mini_damage
+        self.maxi_damage: int = self.config.maxi_damage
         self.effects: list[skills.Skill] = self.config.effects
 
 
@@ -52,8 +54,8 @@ class Recipe(Item):
 
     def __init__(self, game, config):
         super().__init__(game, config)
-        self.ingredients: list[(Item, int)] = self.config.ingredients
-        self.products: list[(Item, int)] = self.config.products
+        self.ingredients: dict[Item, int] = self.config.ingredients
+        self.products: dict[Item, int] = self.config.products
 
 
 class WoodStick(Resource):
@@ -74,7 +76,3 @@ class IronSword(Weapon, Craftable):
         super().__init__(game, game.config.item.equipment.weapon.ironsword)
 
 
-class IronSwordRecipe(Recipe):
-
-    def __init__(self, game):
-        super().__init__(game, game.config.item.recipe.ironswordrecipe)

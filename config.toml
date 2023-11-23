@@ -76,7 +76,8 @@ title="default_config"
 
         [item.craftable.basics]
 
-            recipe=[]
+            known=false
+            recipe={}
 
     [item.basics]
 
@@ -98,6 +99,11 @@ title="default_config"
             name="Iron"
             description="Common mineral used for armors and weapon"
 
+        [item.resource.iron_sword_recipe]
+
+            name="Iron Sword Recipe"
+            description="Recipe for the creation of Iron Sword"
+
     [item.equipment]
 
         [item.equipment.basics]
@@ -110,25 +116,15 @@ title="default_config"
 
             [item.equipment.weapon.basics]
 
-                direct_damage=(0,0)
+                mini_damage=0
+                maxi_damage=0
                 effects=[]
 
             [item.equipment.weapon.iron_sword]
 
                 name="Iron Sword"
                 description="Slicing sword, not very powerful, but a great first companion"
-                recipe=[["*iron", 1], ["*wood_stick", 1]]
+                recipe={"*iron"=1, "*wood_stick"=1}
 
-    [item.recipe]
 
-        [item.recipe.basics]
-
-            ingredients=[]
-            products=[]
-
-        [item.recipe.iron_sword_recipe]
-
-            name="Iron Sword Recipe"
-            description="Recipe for the creation of Iron Sword"
-            ingredients=[["*iron", 1], ["*wood_stick", 1]]
 
