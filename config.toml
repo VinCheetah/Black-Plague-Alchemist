@@ -70,4 +70,23 @@ title="default_config"
 
 [status]
 
+[item]
+
+    [item.basics]
+
+        name="unknown_name"
+        rarity=0
+        description="unknow_description"
+
+
+    [item.resource]
+
+        [item.resource.basics]
+
+        [item.resource.wood_stick]
+
+            name="Wood Stick"
+            description="Pretty useless wood stick found anywhere there are trees"
+            recipe=
+
 
