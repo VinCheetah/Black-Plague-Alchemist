@@ -53,11 +53,20 @@ title="default_config"
 
     [skill.basics]
 
+        name="Unnamed skill"
+        level=0
+
     [skill.fight]
 
         [skill.fight.basics]
+            action_consumption=10
+            cooldown=1
+            target_type="Unknown"
+            target_number=0
 
         [skill.fight.punch]
+
+        [skill.fight.potion_throw]
 
 
 [fight]
@@ -102,16 +111,11 @@ title="default_config"
             name="Iron"
             description="Common mineral used for armors and weapon"
 
-        [item.resource.iron_sword_recipe]
-
-            name="Iron Sword Recipe"
-            description="Recipe for the creation of Iron Sword"
-
         [item.resource.wood_stick]
 
             name="Wood Stick"
             description="Pretty useless wood stick found anywhere there are trees"
-            recipe=[]
+            recipe={}
 
 
     [item.equipment]

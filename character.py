@@ -1,15 +1,18 @@
 from boundedValue import BoundedValue
+from object import Object
 import status
 import skills
 import item
 import console
 
 
-class Character:
+class Character(Object):
 
     def __init__(self, game, config):
-        self.game = game
-        self.config = game.config.character.basics | config
+        Object.__init__(self, game, game.config.character.basics | config)
+
+    def init_config(self):
+        Object.init_config(self)
         self.name = self.config.name
 
 
@@ -17,6 +20,9 @@ class FightingCharacter(Character):
 
     def __init__(self, game, config):
         super().__init__(game, game.config.character.fighter.basics | config)
+
+    def init_config(self):
+        Character.init_config(self)
         self.fight_skill: list[skills.FightSkill] = self.config.fight_skill
         self.attack_rate: int = self.config.attack_rate
 
@@ -31,11 +37,13 @@ class PlayableCharacter(Character):
 
     def __init__(self, game, config):
         super().__init__(game, game.config.character.playable.basics | config)
+
+    def init_config(self):
+        Character.init_config(self)
         self.health: BoundedValue = BoundedValue(self.config.max_health, 0, self.config.max_health)
-        self.equipment: dict[str, item.Equipment] = self.config.equipment
-        # at most one equipment for each equipment slots
+        self.equipment: dict[str, item.Equipment] = self.config.equipment  # at most one equipment for each equipment slots
         self.basic_skill: dict[skills.Skill, int] = self.config.basic_skill
-        self.social_links: dict[Character, int] = self.config.social_links
+        self.social_links: dict[Character, int] = self.config._social_links
         self.status: status.Status = self.config.status
 
 
