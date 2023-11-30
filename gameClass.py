@@ -1,4 +1,8 @@
-import random
+
+import random as rd
+from math import inf
+import time
+
 from object import Object
 import character
 import console
@@ -7,8 +11,6 @@ import config
 import place
 import item
 import skills
-import random as rd
-from math import inf
 
 
 class Game:
@@ -16,7 +18,7 @@ class Game:
     libs = [character, status, item, place, skills, console]
     def __init__(self):
         self.config = config.default_config
-        self.io_mode = "console"
+        self.io_mode = self.config.io_mode
         self.init_objects()
         self.link_config_game()
         self.init_config_all()
@@ -32,6 +34,10 @@ class Game:
     def init_config_all(self):
         for obj in Object.instances:
             obj.init_config()
+
+    @staticmethod
+    def wait(i):
+        time.sleep(i)
 
     def init_objects(self):
         self.init_characters()
@@ -115,6 +121,8 @@ class Game:
                 for item, i in chosen_item.recipe.items():
                     self.rm_item(item, i * chosen_occ)
                 self.add_item(chosen_item, chosen_occ)
-            print(f"{chosen_occ} {chosen_item} have been created!")
+                print(f"{chosen_occ} {chosen_item} have been created!")
+            else:
+                print("Nothing happened!")
         else:
             raise NotImplementedError

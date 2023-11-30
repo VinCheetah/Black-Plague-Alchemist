@@ -4,6 +4,7 @@ title="default_config"
 
     inventory={}
     known_recipe=[]
+    io_mode="console"
 
 [character]
 
@@ -35,7 +36,8 @@ title="default_config"
         [character.playable.alchemist]
 
             name="Francesco"
-            fight_skill=["*PotionThrow", "*Punch"]
+            attack_rate = 60
+            fight_skill=["*PotionThrow"]
 
         [character.playable.knight]
 
@@ -69,7 +71,7 @@ title="default_config"
             cooldown=1
             target_type="enemy"
             target_number=1
-            damages=20
+            damages=30
 
         [skill.fight.punch]
 

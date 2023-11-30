@@ -34,7 +34,7 @@ class FightingCharacter(Character):
 
     def get_damage(self, damages):
         self.health -= damages
-        print(f"{self} has {self.health.str_max()} points of life")
+        # print(f"{self} has {self.health.str_max()} points of life")
 
     def is_defeated(self):
         return self.health == 0

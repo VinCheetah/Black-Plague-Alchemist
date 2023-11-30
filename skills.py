@@ -31,7 +31,6 @@ class FightSkill(Skill):
         self.damages: int = self.config.damages
 
     def applied(self, target):
-        print(f"{self.name} have been applied to {target.name}")
         target.get_damage(self.damages)
 
 

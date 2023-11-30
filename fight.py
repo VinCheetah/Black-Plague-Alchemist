@@ -5,6 +5,7 @@ import console
 import random as rd
 
 
+
 class Fight:
 
     def __init__(self, game, config):
@@ -31,18 +32,20 @@ class Fight:
             time, character = self.priority_queue.get_nowait()
             if character.is_defeated():
                 continue
+            self.game.wait(.5)
             character.say("My turn !")
             self.action(character)
             self.priority_queue.put_nowait((time + character.attack_rate, character))
+        console.print_fight(self)
         print("Fight is over")
         self.result_fight()
 
 
     def result_fight(self):
         if len(self.player_team) == 0:
-            print("You have been defeated")
+            console.say("You have been defeated")
         else:
-            print("You won")
+            console.say("You won")
 
     def get_targets(self, skill, character):
         if skill.mono_target and skill.target_type == "enemy":
@@ -84,10 +87,10 @@ class Fight:
             self.fight_over = True
 
     def defeat_character(self, character: FightingCharacter):
-        print(f"{character} is defeated")
-        team = self.player_team if isinstance(character, PlayableCharacter) else self.enemy_team
+        console.say(f"{character} is defeated", "warning")
+        team = self.player_team if character in self.player_team else self.enemy_team
+        (self.dead_ally if character in self.player_team else self.dead_enemy).append(character)
         team.remove(character)
-        (self.dead_ally if isinstance(character, PlayableCharacter) else self.dead_enemy).append(character)
         if len(team) == 0:
             self.fight_over = True
 

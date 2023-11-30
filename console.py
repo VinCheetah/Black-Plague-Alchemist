@@ -28,6 +28,8 @@ UNDERLINE = '\033[4m'
 ITALIC = '\033[3m'
 STRIKETHROUGH = '\033[9m'
 RESET_ALL = '\033[0m'
+CLEAR = '\033[H\033[J'
+CLEAR_TERMINAL = '\033c'
 
 NO_ITALIC = '\033[23m'
 NO_UNDERLINE = '\033[24m'
@@ -38,9 +40,9 @@ def get_input():
     return input(BLUE + input_str + RESET_ALL)
 
 def request(question, choices):
-    print(question)
+    say(question, CYAN)
     for i, choice in enumerate(choices):
-        print("\t"+str(1 + i)+" : " + str(choice))
+        say("\t"+str(1 + i)+" : *" + str(choice) + "*")
     ans = get_input()
     while not ans.isnumeric() or not (1 <= int(ans) <= len(choices)):
         ans = get_input()
@@ -48,7 +50,7 @@ def request(question, choices):
 
 
 def answer_yn(question, default=True):
-    print(question + " (default: "+("yes" if default else "no")+")")
+    say(question + " (default: "+("yes" if default else "no")+")")
     ans = get_input()
     while ans.lower() not in ["", "yes", "y", "no", "n"]:
         ans = get_input()
@@ -59,9 +61,9 @@ def answer_yn(question, default=True):
 
 
 def request_number(question, min_val=-inf, max_val=inf, ans_type=int):
-    print(question)
+    say(question)
     ans = get_input()
-    while not ans.isnumeric() and min_val <= ans_type(ans) <= max_val:
+    while not (ans.isnumeric() and min_val <= ans_type(ans) <= max_val):
         ans = get_input()
     return ans_type(ans)
 
@@ -74,7 +76,7 @@ def match_transform_begin(transform):
         case "|":
             return UNDERLINE
         case _:
-            print("Transform not recognized")
+            say("Transform not recognized", "warning")
             return ""
 
 
@@ -87,7 +89,7 @@ def match_transform_over(transform):
         case "|":
             return NO_UNDERLINE
         case _:
-            print("Transform not recognized")
+            say("Transform not recognized", "warning")
             return ""
 
 
@@ -98,8 +100,10 @@ def say(what, who="bot", bold=False, end="\n", map_what=True, body_color=""):
         who_str = ""
     elif isinstance(who, Character):
         who_str = who.color + who.name + RESET_ALL + ": "
+    elif who == "warning":
+        who_str = YELLOW + "[WARNING]: " + RESET_ALL
     else:
-        who_str = who + " :"
+        who_str = who
     last_chars = []
     if map_what:
         what_map = ""
@@ -126,7 +130,7 @@ def life_bar(character, bar_size=20):
 
 
 def print_fight(fight):
-    msg = "\n"
+    msg = CLEAR_TERMINAL + RESET_ALL + "\n"
     ally = fight.player_team + fight.dead_ally
     enemy = fight.enemy_team + fight.dead_enemy
     for i in range(max(fight.player_team_size, fight.enemy_team_size)):
@@ -139,7 +143,7 @@ def print_fight(fight):
         temp2 = ""
         if len(enemy) > i:
             temp2 += enemy[i].name + ": "
-            temp2 += " " * max(0, (20 - len(temp2)))
+            temp2 += " " * max(0, (15 - len(temp2)))
             temp2 += life_bar(enemy[i])
 
         msg += temp + " " * max(70 - len(temp), 0) + temp2 + "\n\n"
