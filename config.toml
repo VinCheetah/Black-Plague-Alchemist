@@ -9,29 +9,33 @@ title="default_config"
 
     [character.basics]
 
+        color="*MAGENTA"  # Magenta
+
     [character.fighter]
 
         [character.fighter.basics]
 
             fight_skill=["*Punch"]
             attack_rate=100
+            max_health=100
+            defense=0
+            equipment={}
 
     [character.playable]
 
         [character.playable.basics]
 
-            max_health=100
-            defense=0
-            equipment={}
+
             social_links={"*alchemist"=3, "*knight"=1}
             basic_skill={}
             status="*neutral"
+            attack_rate=110
 
 
         [character.playable.alchemist]
 
             name="Francesco"
-            basics_skills=["*potion_throw"]
+            fight_skill=["*PotionThrow", "*Punch"]
 
         [character.playable.knight]
 
@@ -44,6 +48,8 @@ title="default_config"
     [character.monster]
 
         [character.monster.basics]
+
+            color="*RED"
 
         [character.monster.plagued]
 
@@ -61,12 +67,20 @@ title="default_config"
         [skill.fight.basics]
             action_consumption=10
             cooldown=1
-            target_type="Unknown"
-            target_number=0
+            target_type="enemy"
+            target_number=1
+            damages=20
 
         [skill.fight.punch]
 
+            name="Punch"
+            target_type="enemy"
+            damages=30
+
         [skill.fight.potion_throw]
+
+            name="Potion Throw"
+
 
 
 [fight]
@@ -75,6 +89,7 @@ title="default_config"
 
         escape_probability=0.8
         enemy_tactic="random"
+        rewards={"*gold"=1}
 
 
 [status]
@@ -115,7 +130,12 @@ title="default_config"
 
             name="Wood Stick"
             description="Pretty useless wood stick found anywhere there are trees"
-            recipe={}
+
+        [item.resource.gold]
+
+            name="Gold"
+            description="Money Money Money..."
+
 
 
     [item.equipment]
@@ -126,12 +146,18 @@ title="default_config"
             position="unknown_position"
             additional_skill=[]
 
+        [item.equipment.wood_shield]
+
+            name="Wood Shield"
+            description="Simplest shield to reduce damages"
+            recipe={"*wood_stick"=3}
+
         [item.equipment.weapon]
 
             [item.equipment.weapon.basics]
 
-                mini_damage=0
-                maxi_damage=0
+                min_damage=0
+                max_damage=0
                 effects=[]
 
             [item.equipment.weapon.iron_sword]

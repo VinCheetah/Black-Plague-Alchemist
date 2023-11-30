@@ -144,6 +144,12 @@ class BoundedValue(object):
     def __str__(self):
         return f"{self.value}   (min : {self.min}, max : {self.max})"
 
+    def str(self):
+        return f"{self.min} / {self.value} / {self.max}"
+
+    def str_max(self):
+        return f"{self.value} / {self.max}"
+
     def __repr__(self):
         return str(self.value)
 

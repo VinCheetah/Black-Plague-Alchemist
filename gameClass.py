@@ -13,7 +13,7 @@ from math import inf
 
 class Game:
 
-    libs = [character, status, item, place, skills]
+    libs = [character, status, item, place, skills, console]
     def __init__(self):
         self.config = config.default_config
         self.io_mode = "console"
@@ -51,13 +51,14 @@ class Game:
         self.wood_stick = item.WoodStick(self)
         self.iron = item.Iron(self)
         self.iron_sword = item.IronSword(self)
+        self.wood_shield = item.WoodShield(self)
 
     def init_status(self):
         self.neutral = status.Neutral(self)
 
     def init_skills(self):
-
         self.potion_throw = skills.PotionThrow(self)
+        self.punch = skills.Punch(self)
 
     def start(self):
         self.init_starting()

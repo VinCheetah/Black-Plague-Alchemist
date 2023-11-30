@@ -1,6 +1,8 @@
 from object import Object
 
 
+
+
 class Skill(Object):
 
     def __init__(self, game, config):
@@ -26,9 +28,11 @@ class FightSkill(Skill):
         self.mono_target = True
         self.target_type: str = self.config.target_type  # self, enemy, ally, all
         self.target_number: int = self.config.target_number  # [1, +inf]
+        self.damages: int = self.config.damages
 
     def applied(self, target):
         print(f"{self.name} have been applied to {target.name}")
+        target.get_damage(self.damages)
 
 
 

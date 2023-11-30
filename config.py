@@ -3,6 +3,9 @@ import collections.abc
 import random
 from collections import UserDict
 from collections.abc import Iterable
+import object
+
+from inspect import isclass
 
 import skills
 import character
@@ -40,11 +43,17 @@ class MyDict(UserDict):
                         return getattr(self.game, new_data)
                     else:
                         if self.debug:
-                            print("Not in game :", self.game.__dict__)
+                            print("Not in game :", new_data)
                     for lib in self.game.libs:
                         if new_data in lib.__dict__:
-                            return getattr(lib, new_data)
+                            data_found = getattr(lib, new_data)
+                            if isclass(data_found) and issubclass(data_found, object.Object):
+                                return data_found(self.game)
+                            else:
+                                return data_found
                     raise ValueError(f"Lib not found for {new_data}")
+                elif data[0] == "\\":
+                    return data[1:]
                 else:
                     return data
             elif isinstance(data, Iterable):

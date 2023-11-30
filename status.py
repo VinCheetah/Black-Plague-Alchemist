@@ -3,7 +3,7 @@ class Status:
     def __init__(self, game, config):
         self.game = game
         self.config = game.config.status.basics | config
-        self.duration: int = self.config.duration #number of turns the status remains
+        self.duration: int = self.config.duration  #number of turns the status remains
 
 class Neutral(Status):
 

@@ -8,9 +8,9 @@ class Item(Object):
 
     def init_config(self):
         Object.init_config(self)
-        self.name = self.config.name
-        self.rarity = self.config.rarity
-        self.description = self.config.description
+        self.name: str = self.config.name
+        self.rarity: int = self.config.rarity
+        self.description: str = self.config.description
 
     def __repr__(self):
         return self.name
@@ -45,8 +45,8 @@ class Weapon(Equipment):
 
     def init_config(self):
         Equipment.init_config(self)
-        self.mini_damage: int = self.config.mini_damage
-        self.maxi_damage: int = self.config.maxi_damage
+        self.min_damage: int = self.config.min_damage
+        self.max_damage: int = self.config.max_damage
         self.effects: list[skills.Skill] = self.config.effects
 
 
@@ -84,9 +84,24 @@ class IronSword(Weapon, Craftable):
         Weapon.__init__(self, game, game.config.item.equipment.weapon.iron_sword)
         Craftable.__init__(self, game, game.config.item.equipment.weapon.iron_sword)
 
+
     def init_config(self):
         Weapon.init_config(self)
         Craftable.init_config(self)
+
+
+
+
+class WoodShield(Equipment, Craftable):
+
+    def __init__(self, game):
+        Equipment.__init__(self, game, game.config.item.equipment.wood_shield)
+        Craftable.__init__(self, game, game.config.item.equipment.wood_shield)
+
+    def init_config(self):
+        Equipment.init_config(self)
+        Craftable.init_config(self)
+
 
 
 
