@@ -5,6 +5,10 @@ class Neutral(Status):
     path = "neutral"
 
 
+class Poisoned(Status):
+    path = "poisoned"
+
+
 class Laughing(Status):
     ...
 
@@ -14,10 +18,6 @@ class Bleeding(Status):
 
 
 class Stunt(Status):
-    ...
-
-
-class Poisoned(Status):
     ...
 
 

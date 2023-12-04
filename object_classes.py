@@ -106,16 +106,18 @@ class FightSkill(Skill, Object):
         self.target_number: int = self.config.target_number  # [1, +inf]
         self.damages: int = self.config.damages
 
-    def applied(self, target):
+    def applied(self, target, *add_args):
         target.get_damage(self.damages)
 
     def train(self):
         super().train()
         self.damages *= 1.5
 
-    def fight_selected(self, fight, character) -> None:
-        pass
+    def fight_selected(self, fight, character) -> list:
+        return []
 
+    def request_target(self, fight, character, *add_args):
+        return fight.request_target(self, character)
 
 
 
@@ -155,6 +157,9 @@ class Character(Object):
 
     def say(self, what, bold=True, end="\n", map_what=True):
         console.say(what, self, bold, end, map_what)
+
+    def add_status(self, status):
+        console.say(f"{self.name} is now {status}", "warning")
 
 
 class FightingCharacter(Character):
@@ -399,8 +404,13 @@ class Potion(Consumable):
     def init_config(self):
         super().init_config()
         self.required_level = self.config.required_level
+        self.target = self.config.target
+        self.damage = self.config.damage
 
-    def useful(self, fight, character) -> bool:
+    def useful(self, fight, character: FightingCharacter) -> bool:
+        return True
+
+    def useful_on(self, character: FightingCharacter) -> bool:
         return True
 
     def level_required(self, character: FightingCharacter) -> bool:
@@ -411,6 +421,22 @@ class Potion(Consumable):
             if type(skill) is PotionThrow:
                 max_level = max(max_level, skill.level)
         return max_level >= self.required_level
+
+    def find_target(self, fight, character: FightingCharacter) -> FightingCharacter:
+        if self.game.io_mode == "console":
+            target = console.request("Select a target:",
+                                     fight.player_team + fight.enemy_team,
+                                     recommended_filter=lambda x: self.useful_on(x),
+                                     valid_filter=lambda x: x in (fight.enemy_team if (character in fight.player_team) ^ (self.target == "ally") else fight.player_team))
+            return target
+        else:
+            raise NotImplementedError
+
+    def applied(self, character: FightingCharacter):
+        character.get_damage(self.damage)
+        for effect in self.effects:
+            character.add_status(effect)
+
 
 
 

@@ -9,7 +9,7 @@ def simu_fight():
     new_game.add_item(new_game.poison_potion)
     new_game.add_item(new_game.heal_potion)
     new_game.add_item(new_game.damage_potion)
-    new_fight = fight.Fight(new_game, {"player_team": [character.Plagued.with_config(new_game), new_game.alchemist], "enemy_team": [character.Plagued.with_config(new_game)]})
+    new_fight = fight.Fight(new_game, {"player_team": [character.Plagued.with_config(new_game), new_game.alchemist], "enemy_team": [character.Plagued.with_config(new_game), character.Plagued.with_config(new_game)]})
     new_fight.start()
 
 

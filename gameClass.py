@@ -13,10 +13,10 @@ import item
 import skills
 
 
-
 class Game:
 
     libs = [character, status, item, place, skills, console]
+
     def __init__(self):
         self.config = config.default_config
         self.io_mode = self.config.general.io_mode
@@ -25,8 +25,8 @@ class Game:
         self.init_config_all()
         self.main_character = []
         self.place = ...
-        self.inventory: dict[_Item, int] = self.config.general.inventory
-        self.known_recipe: list[_Craftable] = self.config.general.known_recipe
+        self.inventory: dict[Item, int] = self.config.general.inventory
+        self.known_recipe: list[Craftable] = self.config.general.known_recipe
         self.characters = []
 
     def link_config_game(self):
@@ -37,6 +37,7 @@ class Game:
             for obj in Object.non_init_instances:
                 obj.init_config()
         assert len(Object.non_init_instances) == 0
+
     @staticmethod
     def wait(i):
         time.sleep(i)
@@ -52,7 +53,6 @@ class Game:
     def init_characters(self):
         self.alchemist = character.Alchemist(self)
         self.knight = character.Knight(self)
-
         self.plagued = character.Plagued(self)
 
     def init_items(self):

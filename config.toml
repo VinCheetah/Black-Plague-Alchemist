@@ -123,8 +123,18 @@ title="default_config"
 
         duration=inf
         name="Unamed Status"
+        console_color="*WHITE"
 
     [status.neutral]
+
+        name="Neutral"
+
+    [status.poisoned]
+
+        name="Poisoned"
+        damage=10
+        duration=3
+        console_color="*GREEN"
 
 [item]
 
@@ -206,24 +216,27 @@ title="default_config"
             [item.consumable.potion.basics]
 
                 name="Unamed potion"
+                target="enemy"
                 required_level=1
+                damage=0
 
             [item.consumable.potion.damage]
 
                 name="Damage Potion"
-                target="enemy"
+                damage=35
 
             [item.consumable.potion.poison]
 
                 name="Poison Potion"
-                target="enemy"
                 required_level=2
-
+                damage=10
+                effects=["$Poisoned"]
 
             [item.consumable.potion.heal]
 
                 name="Heal Potion"
                 target="ally"
+                damage=-20
 
 
 

@@ -29,7 +29,7 @@ class MyDict(UserDict):
             if self.debug or self.small_debug:
                 print("Looks like a game is Known")
             if isinstance(data, str):
-                if data[0] == "*":
+                if data[0] == "*" or data[0] == "$":
                     new_data = data[1:]
                     if self.debug:
                         print("I am transforming", new_data)
@@ -41,7 +41,7 @@ class MyDict(UserDict):
                     for lib in self.game.libs:
                         if new_data in lib.__dict__:
                             data_found = getattr(lib, new_data)
-                            if isclass(data_found) and issubclass(data_found, object_classes.Object):
+                            if isclass(data_found) and issubclass(data_found, object_classes.Object) and data[0] != "$":
                                 return data_found(self.game)
                             else:
                                 return data_found

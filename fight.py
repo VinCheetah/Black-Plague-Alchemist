@@ -58,30 +58,30 @@ class Fight:
         else:
             raise NotImplementedError
 
-    def request_target(self, skill, character: FightingCharacter) -> FightingCharacter:
+    def request_target(self, skill: FightSkill, character: FightingCharacter) -> FightingCharacter:
         targets: list[FightingCharacter] = self.get_targets(skill, character)
         if self.game.io_mode == "console":
             return console.request("Choose your target :", targets)
         else:
             raise NotImplementedError
 
-    def player_action(self, character: PlayableCharacter) -> tuple[FightSkill, FightingCharacter]:
+    def player_action(self, character: PlayableCharacter) -> tuple[FightSkill, FightingCharacter, list]:
         skill: FightSkill = character.request_fight_action()
-        skill.fight_selected(self, character)
-        target: FightingCharacter = self.request_target(skill, character)
-        return skill, target
+        add_args = skill.fight_selected(self, character)
+        target: FightingCharacter = skill.request_target(self, character, *add_args)
+        return skill, target, add_args
 
-    def enemy_action(self, character: FightingCharacter) -> tuple[FightSkill, FightingCharacter]:
+    def enemy_action(self, character: FightingCharacter) -> tuple[FightSkill, FightingCharacter, list]:
         if self.enemy_tactic == "random":
             skill = rd.choice(character.fight_skill)
             target = rd.choice(self.get_targets(skill, character))
-            return skill, target
+            return skill, target, []
         else:
             raise NotImplementedError
 
     def action(self, character: FightingCharacter) -> None:
-        skill, target = self.player_action(character) if isinstance(character, PlayableCharacter) else self.enemy_action(character)
-        skill.applied(target)
+        skill, target, add_args = self.player_action(character) if isinstance(character, PlayableCharacter) else self.enemy_action(character)
+        skill.applied(target, *add_args)
         if target.is_defeated():
             self.defeat_character(target)
 

@@ -62,9 +62,9 @@ def request(question: str, choices: list[Any], recommended_filter=None, valid_fi
     for choice in wrong_choices:
         say("\t  : " + str(choice) + "  _(impossible choice)_", map_what=True)
     ans = get_input()
-    while not ans.isnumeric() or not (1 <= int(ans) <= len(choices)):
+    while not ans.isnumeric() or not (1 <= int(ans) <= len(valid_choices)):
         ans = get_input()
-    return choices[int(ans) - 1]
+    return (recommended + not_recommended)[int(ans) - 1]
 
 
 def answer_yn(question: str, default: bool = True) -> bool:
