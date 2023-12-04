@@ -2,15 +2,19 @@ import gameClass
 import fight
 import character
 import item
-
+import object
 
 def simu_fight():
     new_game = gameClass.Game()
-    new_fight = fight.Fight(new_game, {"player_team": [new_game.alchemist, new_game.knight], "enemy_team": [character.Plagued.with_config(new_game), character.Plagued.with_config(new_game)]})
+    new_game.add_item(new_game.poison_potion)
+    new_game.add_item(new_game.heal_potion)
+    new_game.add_item(new_game.damage_potion)
+    new_fight = fight.Fight(new_game, {"player_team": [character.Plagued.with_config(new_game), new_game.alchemist], "enemy_team": [character.Plagued.with_config(new_game)]})
     new_fight.start()
 
 
-# simu_fight()
+simu_fight()
+
 
 def simu_creation():
     new_game = gameClass.Game()
@@ -21,4 +25,4 @@ def simu_creation():
     new_game.item_creation()
 
 
-simu_creation()
+# simu_creation()

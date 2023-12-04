@@ -1,4 +1,5 @@
 from math import inf
+from typing import Any
 
 input_str = "\t --> "
 
@@ -36,21 +37,38 @@ NO_UNDERLINE = '\033[24m'
 NO_BOLD = '\033[22m'
 NO_STRIKETHROUGH = '\033[29m'
 
-def get_input():
+
+def get_input() -> str:
     return input(BLUE + input_str + RESET_ALL)
 
-def request(question, choices):
-    say(question, CYAN)
-    for i, choice in enumerate(choices):
-        say("\t"+str(1 + i)+" : *" + str(choice) + "*")
+
+def filter_split(iterable, func_filter=None):
+    return (type(iterable)(filter(func_filter, iterable) if func_filter is not None else iterable),
+            type(iterable)(filter(lambda x: not func_filter(x), iterable) if func_filter is not None else []))
+
+
+def request(question: str, choices: list[Any], recommended_filter=None, valid_filter=None) -> Any:
+    valid_choices, wrong_choices = filter_split(choices, valid_filter)
+    # assert len(valid_choices) > 0
+    if len(valid_choices) == 1:
+        say(f"{valid_choices[0]} have been selected (only choice)")
+        return valid_choices[0]
+    recommended, not_recommended = filter_split(valid_choices, recommended_filter)
+    say(question, CYAN, map_what=True)
+    for i, choice in enumerate(recommended):
+        say("\t"+str(1 + i)+" : *" + str(choice) + "*", map_what=True)
+    for i, choice in enumerate(not_recommended):
+        say("\t"+str(1 + i + len(recommended))+" : *" + str(choice) + "*  _(not recommended)_", map_what=True)
+    for choice in wrong_choices:
+        say("\t  : " + str(choice) + "  _(impossible choice)_", map_what=True)
     ans = get_input()
     while not ans.isnumeric() or not (1 <= int(ans) <= len(choices)):
         ans = get_input()
-    return int(ans) - 1
+    return choices[int(ans) - 1]
 
 
-def answer_yn(question, default=True):
-    say(question + " (default: "+("yes" if default else "no")+")")
+def answer_yn(question: str, default: bool = True) -> bool:
+    say(question + " (default: "+("yes" if default else "no")+")", map_what=True)
     ans = get_input()
     while ans.lower() not in ["", "yes", "y", "no", "n"]:
         ans = get_input()
@@ -60,14 +78,14 @@ def answer_yn(question, default=True):
         return ans in ["yes", "y"]
 
 
-def request_number(question, min_val=-inf, max_val=inf, ans_type=int):
+def request_number(question: str, min_val: int | float = -inf, max_val: int | float = inf, ans_type: type = int) -> int | float:
     say(question)
     ans = get_input()
     while not (ans.isnumeric() and min_val <= ans_type(ans) <= max_val):
         ans = get_input()
     return ans_type(ans)
 
-def match_transform_begin(transform):
+def match_transform_begin(transform: str) -> str:
     match transform:
         case "*":
             return BOLD
@@ -80,7 +98,7 @@ def match_transform_begin(transform):
             return ""
 
 
-def match_transform_over(transform):
+def match_transform_over(transform: str) -> str:
     match transform:
         case "*":
             return NO_BOLD
@@ -93,13 +111,13 @@ def match_transform_over(transform):
             return ""
 
 
-def say(what, who="bot", bold=False, end="\n", map_what=True, body_color=""):
-    from character import Character
+def say(what: str, who="bot", bold: bool = False, end: str = "\n", map_what: bool = False, body_color: str = "") -> None:
+    from object_classes import Character
     bold_str = BOLD if bold else ""
     if who == "bot":
         who_str = ""
     elif isinstance(who, Character):
-        who_str = who.color + who.name + RESET_ALL + ": "
+        who_str = who.console_color + who.name + RESET_ALL + ": "
     elif who == "warning":
         who_str = YELLOW + "[WARNING]: " + RESET_ALL
     else:

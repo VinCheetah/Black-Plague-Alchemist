@@ -1,37 +1,6 @@
-from object import Object
-
-
-
-
-class Skill(Object):
-
-    def __init__(self, game, config):
-        Object.__init__(self, game, game.config.skill.basics | config)
-
-    def init_config(self):
-        Object.init_config(self)
-        self.name: str = self.config.name
-        self.level: int = self.config.level
-
-
-
-
-class FightSkill(Skill):
-
-    def __init__(self, game, config):
-        super().__init__(game, game.config.skill.fight.basics | config)
-
-    def init_config(self):
-        Skill.init_config(self)
-        self.action_consumption: int = self.config.action_consumption
-        self.cooldown: int = self.config.cooldown
-        self.mono_target = True
-        self.target_type: str = self.config.target_type  # self, enemy, ally, all
-        self.target_number: int = self.config.target_number  # [1, +inf]
-        self.damages: int = self.config.damages
-
-    def applied(self, target):
-        target.get_damage(self.damages)
+import console
+from object_classes import Skill, FightSkill
+from object_classes import Potion
 
 
 
@@ -49,9 +18,7 @@ class Speed:
 
 
 class Punch(FightSkill):
-
-    def __init__(self, game):
-        super().__init__(game, game.config.skill.fight.punch)
+    path = "punch"
 
 
 class SwordSlash:
@@ -59,12 +26,23 @@ class SwordSlash:
 
 
 class PotionThrow(FightSkill):
+    path = "potion_throw"
 
-    def __init__(self, game):
-        super().__init__(game, game.config.skill.fight.potion_throw)
+    def fight_selected(self, fight, character) -> None:
+        if self.game.io_mode == "console":
+            potion = console.request("Which potion would you like to throw:",
+                            [item for item, num in self.game.inventory.items() if
+                             isinstance(item, Potion) and num > 0],
+                            recommended_filter=lambda pot: potion.useful(fight, character),
+                            valid_filter=lambda pot: potion.level_required(character))
+            potion.find_target()
+        else:
+            raise NotImplementedError
 
 
 class Meteor(FightSkill):
+    path = "meteor"
 
-    def __init__(self, game):
-        super().__init__(game, game.config.skill.fight.meteor)
+
+class HealPotion(FightSkill):
+    path = "heal_potion"

@@ -3,16 +3,9 @@ import collections.abc
 import random
 from collections import UserDict
 from collections.abc import Iterable
-import object
+import object_classes
 
 from inspect import isclass
-
-import skills
-import character
-import status
-import place
-import item
-
 
 
 class MyDict(UserDict):
@@ -20,6 +13,7 @@ class MyDict(UserDict):
     game = None
     debug = False
     small_debug = False
+
     @classmethod
     def get_default(cls):
         with open("config.toml", "r") as config_file:
@@ -47,7 +41,7 @@ class MyDict(UserDict):
                     for lib in self.game.libs:
                         if new_data in lib.__dict__:
                             data_found = getattr(lib, new_data)
-                            if isclass(data_found) and issubclass(data_found, object.Object):
+                            if isclass(data_found) and issubclass(data_found, object_classes.Object):
                                 return data_found(self.game)
                             else:
                                 return data_found
@@ -84,6 +78,13 @@ class MyDict(UserDict):
         if attr in self.data and isinstance(self.data[attr], collections.abc.Mapping):
             return MyDict(**self.data[attr])
         return self.get_val(attr)
+
+    def __ior__(self, other):
+        if not isinstance(other, (dict, MyDict)):
+            print("type of other is : ", type(other))
+            return NotImplemented
+        self.data = other | self.data
+        return self
 
     # def __repr__(self):
     #     return "MyDict " + super(MyDict, self).__repr__()

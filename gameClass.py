@@ -3,7 +3,7 @@ import random as rd
 from math import inf
 import time
 
-from object import Object
+from object_classes import *
 import character
 import console
 import status
@@ -13,28 +13,30 @@ import item
 import skills
 
 
+
 class Game:
 
     libs = [character, status, item, place, skills, console]
     def __init__(self):
         self.config = config.default_config
-        self.io_mode = self.config.io_mode
+        self.io_mode = self.config.general.io_mode
         self.init_objects()
         self.link_config_game()
         self.init_config_all()
         self.main_character = []
         self.place = ...
-        self.inventory: dict[item.Item, int] = self.config.general.inventory
-        self.known_recipe: list[item.Craftable] = self.config.general.known_recipe
+        self.inventory: dict[_Item, int] = self.config.general.inventory
+        self.known_recipe: list[_Craftable] = self.config.general.known_recipe
         self.characters = []
 
     def link_config_game(self):
         config.MyDict.game = self
 
     def init_config_all(self):
-        for obj in Object.instances:
-            obj.init_config()
-
+        while len(Object.non_init_instances) != 0:
+            for obj in Object.non_init_instances:
+                obj.init_config()
+        assert len(Object.non_init_instances) == 0
     @staticmethod
     def wait(i):
         time.sleep(i)
@@ -58,6 +60,9 @@ class Game:
         self.iron = item.Iron(self)
         self.iron_sword = item.IronSword(self)
         self.wood_shield = item.WoodShield(self)
+        self.poison_potion = item.PoisonPotion(self)
+        self.heal_potion = item.HealPotion(self)
+        self.damage_potion = item.DamagePotion(self)
 
     def init_status(self):
         self.neutral = status.Neutral(self)
@@ -84,7 +89,7 @@ class Game:
 
     def add_recipe(self, item):
         if item in self.known_recipe:
-            print(f"Recipe of {item.name} is already known")
+            console.say(f"Recipe of {item.name} is already known", "warning")
         else:
             self.known_recipe.append(item)
 
@@ -97,7 +102,7 @@ class Game:
     def check_ingredients(self, recipe, nb_prod=1):
         for (item, i) in recipe.items():
             if item not in self.inventory or self.inventory[item] < i * nb_prod:
-                print("Not enough", item)
+                console.say(f"Not enough *{item}*")
                 return False
         return True
 
@@ -113,7 +118,7 @@ class Game:
     def item_creation(self):
         available_recipe = [item for item in self.known_recipe if self.check_ingredients(item.recipe)]
         if self.io_mode == "console":
-            chosen_item = available_recipe[console.request("Which recipe to perform? :", available_recipe)]
+            chosen_item = console.request("Which recipe to perform? :", available_recipe)
             max_occ = self.max_available(chosen_item.recipe)
             chosen_occ = console.request_number(f"How many times to perform? :  [0 -- {max_occ}]", 0, max_occ)
             ans = console.answer_yn(f"Create {chosen_occ} {chosen_item}? :")
