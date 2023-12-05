@@ -464,9 +464,33 @@ class Resource(Item):
 
 
 
+###############################
+### F I G H T   S T A T U S ###
+###############################
+
+class FightStatus(Object):
+
+    def __init__(self, game, prev_config=None):
+        class_config = default_config.fight_status
+        config = MyDict(prev_config if prev_config is not None else {})
+        if hasattr(self, "path"):
+            if self.path is not None:
+                if self.path in class_config:
+                    config |= class_config[self.path]
+                    self.path = None
+                else:
+                    console.say(f"Should have {self.path} in {class_config}", "warning")
+        else:
+            console.say(f"{type(self)} do not have path")
+        config |= class_config.basics
+        super().__init__(game, config)
+
+
+
 ###################
 ### S T A T U S ###
 ###################
+
 
 class Status(Object):
 
@@ -484,3 +508,4 @@ class Status(Object):
             console.say(f"{type(self)} do not have path")
         config |= class_config.basics
         super().__init__(game, config)
+

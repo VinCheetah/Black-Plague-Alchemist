@@ -13,7 +13,7 @@ def simu_fight():
     new_fight.start()
 
 
-simu_fight()
+# simu_fight()
 
 
 def simu_creation():
@@ -25,4 +25,4 @@ def simu_creation():
     new_game.item_creation()
 
 
-# simu_creation()
+simu_creation()

@@ -9,7 +9,7 @@ import random as rd
 
 class Fight:
 
-    def __init__(self, game: Game, config: MyDict):
+    def __init__(self, game: Game, config: MyDict | dict):
         self.game: Game = game
         self.config: MyDict = game.config.fight.basics | config
         self.escape_probability: float = self.config.escape_probability
