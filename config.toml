@@ -22,7 +22,15 @@ title="default_config"
             attack_rate=100
             max_health=100
             defense=0
-            equipment={}
+            equipments=[]
+
+            critical_rate_boost=1
+            critical_rate_drop=1
+            damage_boost=1
+            defense_boost=1
+            precision_boost=1
+            dodge_boost=1
+            critical_defense_boost=1
 
     [character.playable]
 
@@ -74,16 +82,20 @@ title="default_config"
         name="Unnamed skill"
         level=1
 
+
     [skill.fight]
 
         [skill.fight.basics]
 
             name = "Unnamed fight skill"
             action_consumption=10
-            cooldown=1
+            cooldown=0
             target_type="enemy"
             target_number=1
             damages=30
+            critical_rate=0.1
+            critical_damage_boost=3
+            dodge=0.1
 
         [skill.fight.punch]
 
@@ -131,10 +143,48 @@ title="default_config"
 
     [status.poisoned]
 
+
+
+[fight_status]
+
+    [fight_status.basics]
+
+        duration=1
+        damage_probability=1
+        damage=0
+
+    # Probabilities
+        cure=0
+        attack_stop=false
+        precision_boost=1
+        damage_boost=1
+        heal_boost=1
+        critical_boost=1
+        critical_rate_boost=1
+        critical_drop=1
+        hint_boost=1
+
+
+    [fight_status.poisoned]
+
         name="Poisoned"
         damage=10
         duration=3
         console_color="*GREEN"
+
+    [fight_status.lucky]
+
+        name="Lucky"
+        duration=3
+        precision_boost=2
+        critical_rate_boost=2
+        critical_drop=2
+
+    [fight_status.stunned]
+
+        name="Stunned"
+        duration=1
+        attack_stop=true
 
 [item]
 
@@ -200,7 +250,7 @@ title="default_config"
 
                 name="Iron Sword"
                 description="Slicing sword, not very powerful, but a great first companion"
-                recipe={"*iron"=1, "*wood_stick"=1}
+                recipe={"*iron"=2, "*wood_stick"=1}
 
 
 

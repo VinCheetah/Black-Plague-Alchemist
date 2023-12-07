@@ -42,6 +42,13 @@ class Game:
     def wait(i):
         time.sleep(i)
 
+    @staticmethod
+    def list_product(iterable: list):
+        prod = 1
+        for element in iterable:
+            prod *= element
+        return prod
+
     def init_objects(self):
         self.init_characters()
         self.init_items()

@@ -79,11 +79,50 @@ class Fight:
         else:
             raise NotImplementedError
 
+    def heal_attack(self, skill, target, origin):
+        target_heal_boost = target.compute_boost("heal")
+
+        return
+
+    def apply_damage_skill(self, skill, target: FightingCharacter, origin: FightingCharacter):
+        target.get_damage(self.damage_attack(skill, target, origin))
+
+    def damage_attack(self, skill, target, origin):
+        if not self.is_dodged(skill, target, origin):
+            target_defense_boost = target.compute_boost("defense", skill)
+            origin_attack_boost = origin.compute_boost("damage", skill)
+            critical_boost = self.critical_boost(skill, target, origin)
+            return skill.damages * critical_boost * target_defense_boost * origin_attack_boost
+        else:
+            console.say(f"{skill} made by {origin} on {target} is dodged !", "warning")
+            return 0
+
+    def is_dodged(self, skill, target, origin):
+        target_dodge_boost = target.compute_boost("dodge", skill)
+        origin_precision_boost = origin.compute_boost("precision", skill)
+        return self.game.random_event(skill.dodge * target_dodge_boost / origin_precision_boost)
+
+    def critical_boost(self, skill, target: FightingCharacter, origin: FightingCharacter) -> float:
+        if self.is_critical(skill, target, origin):
+            console.say(f"{skill} made by {origin} on {target} is critical !", "warning")
+            target_defense_boost = target.compute_boost("critical_defense", skill)
+            origin_attack_boost = origin.compute_boost("critical_damage", skill)
+            return skill.critical_damage_boost * origin_attack_boost / target_defense_boost
+        else:
+            return 1
+
+    def is_critical(self, skill, target: FightingCharacter, origin: FightingCharacter) -> bool:
+        target_drop = target.compute_drop("critical_rate", skill)
+        origin_boost = origin.compute_boost("critical_rate", skill)
+        return self.game.random_event(skill.critical_rate * origin_boost / target_drop)
+
     def action(self, character: FightingCharacter) -> None:
-        skill, target, add_args = self.player_action(character) if isinstance(character, PlayableCharacter) else self.enemy_action(character)
-        skill.applied(target, *add_args)
-        if target.is_defeated():
-            self.defeat_character(target)
+        if not character.attack_stop():
+            skill, target, add_args = self.player_action(character) if isinstance(character, PlayableCharacter) else self.enemy_action(character)
+            skill.applied(self, target, character, *add_args)
+            if target.is_defeated():
+                self.defeat_character(target)
+        character.fight_statuses_update()
 
     def escape(self) -> None:
         if self.game.random_event(self.escape_probability):

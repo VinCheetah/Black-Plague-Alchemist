@@ -44,7 +44,7 @@ class PotionThrow(FightSkill):
         potion = add_args[0]
         return potion.find_target(fight, character)
 
-    def applied(self, target, *add_args):
+    def applied(self, fight, target, origin, *add_args):
         assert len(add_args) == 1
         potion = add_args[0]
         potion.applied(target)
