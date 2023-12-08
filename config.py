@@ -29,7 +29,7 @@ class MyDict(UserDict):
             if self.debug or self.small_debug:
                 print("Looks like a game is Known")
             if isinstance(data, str):
-                if data[0] == "*" or data[0] == "$":
+                if data[0] in ["*", "$"]:
                     new_data = data[1:]
                     if self.debug:
                         print("I am transforming", new_data)

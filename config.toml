@@ -27,20 +27,22 @@ title="default_config"
             critical_rate_boost=1
             critical_rate_drop=1
             damage_boost=1
+            heal_boost=1
             defense_boost=1
             precision_boost=1
             dodge_boost=1
             critical_defense_boost=1
+            critical_damage_boost=1
 
     [character.playable]
 
         [character.playable.basics]
 
 
-            social_links={"*alchemist"=3, "*knight"=1}
+            social_links={}
             basic_skill={}
             status="*neutral"
-            attack_rate=110
+            attack_rate=100
             console_color="*MAGENTA"
 
 
@@ -48,13 +50,17 @@ title="default_config"
 
             name="Francesco"
             attack_rate = 60
-            fight_skill=["*PotionThrow"]
+            fight_skill=["*PotionThrow", "*Punch"]
 
         [character.playable.knight]
 
             name="Lancelot"
 
         [character.playable.priest]
+
+            name="Luc-Olivier"
+            attack_rate=100
+            fight_skill=["*Curse", "*AngelBenediction", "*SatanClawStrike"]
 
         [character.playable.jester]
 
@@ -88,11 +94,14 @@ title="default_config"
         [skill.fight.basics]
 
             name = "Unnamed fight skill"
+            console_color="*BLUE"
             action_consumption=10
             cooldown=0
+            effects={}
             target_type="enemy"
             target_number=1
-            damages=30
+            damages=0
+            heal=0
             critical_rate=0.1
             critical_damage_boost=3
             dodge=0.1
@@ -101,6 +110,7 @@ title="default_config"
 
             name="Punch"
             target_type="enemy"
+            effects={"$Stunned"=0.15}
             damages=30
 
         [skill.fight.potion_throw]
@@ -110,14 +120,33 @@ title="default_config"
         [skill.fight.meteor]
 
             cooldown=3
-            damage=50
-            target_number=2
+            damages=50
 
-        [skill.fight.heal_potion]
 
-            name="Heal Potion"
-            damages=-20
+        [skill.fight.curse]
+
+            name="Curse"
+            cooldown=2
+            effects={"$Cursed"=0.9}
+
+        [skill.fight.angel_benediction]
+
+            name="Angel's Benediction"
+            effects={"$Lucky"=0.5, "$Regenerated"=0.6,"$Frenetic"=0.6, "$Untouchable"=0.3}
+            heal=20
             target_type="ally"
+
+        [skill.fight.satan_claw_strike]
+
+            name="Satan's Claw Strike"
+            damages=40
+            dodge=0.3
+            critical=0.2
+
+
+
+
+
 
 
 [fight]
@@ -150,25 +179,33 @@ title="default_config"
     [fight_status.basics]
 
         duration=1
-        damage_probability=1
-        damage=0
+        damages_rate=1
+        damages=0
+        console_color="*YELLOW"
 
     # Probabilities
         cure=0
         attack_stop=false
+        attack_rate_boost=1
+        attack_rate_drop=1
         precision_boost=1
+        precision_drop=1
         damage_boost=1
+        damage_drop=1
+        defense_boost=1
         heal_boost=1
-        critical_boost=1
+        heal_drop=1
+        critical_damage_boost=1
+        critical_defense_boost=1
         critical_rate_boost=1
-        critical_drop=1
-        hint_boost=1
-
+        critical_rate_drop=1
+        dodge_boost=1
+        dodge_drop=1
 
     [fight_status.poisoned]
 
         name="Poisoned"
-        damage=10
+        damages=10
         duration=3
         console_color="*GREEN"
 
@@ -177,14 +214,42 @@ title="default_config"
         name="Lucky"
         duration=3
         precision_boost=2
-        critical_rate_boost=2
-        critical_drop=2
+        critical_rate_boost=3
 
     [fight_status.stunned]
 
         name="Stunned"
         duration=1
         attack_stop=true
+
+    [fight_status.cursed]
+
+        name="Cursed"
+        duration=4
+        cure=0.15
+        attack_rate_drop=1.5
+        precision_drop=2
+        critical_rate_drop=3
+        dodge_drop=2
+
+    [fight_status.regenerated]
+
+        name="Regenerated"
+        duration=3
+        damages=-15
+
+    [fight_status.frenetic]
+
+        name="Frenetic"
+        duration=3
+        attack_rate_boost=2
+
+    [fight_status.untouchable]
+
+        name="Untouchable"
+        duration=2
+        defense_boost=inf
+
 
 [item]
 
@@ -259,7 +324,7 @@ title="default_config"
         [item.consumable.basics]
 
             name="Unamed consumable item"
-            effects=[]
+            effects={}
 
         [item.consumable.potion]
 
@@ -268,25 +333,48 @@ title="default_config"
                 name="Unamed potion"
                 target="enemy"
                 required_level=1
-                damage=0
+                damages=0
+                heal=0
+                dodge=0
+                critical_rate=0
+                critical_damage_boost=1
 
             [item.consumable.potion.damage]
 
                 name="Damage Potion"
-                damage=35
+                damages=35
 
             [item.consumable.potion.poison]
 
                 name="Poison Potion"
-                required_level=2
-                damage=10
-                effects=["$Poisoned"]
+                required_level=1
+                damages=10
+                effects={"$Poisoned"=1}
 
             [item.consumable.potion.heal]
 
                 name="Heal Potion"
                 target="ally"
-                damage=-20
+                heal=20
+
+
+[fight_enhancer]
+
+    [fight_enhancer.basics]
+
+        attack_stop=false
+        attack_rate_boost=1
+        attack_rate_drop=1
+        precision_boost=1
+        damage_boost=1
+        defense_boost=1
+        heal_boost=1
+        heal_drop=1
+        critical_damage_boost=1
+        critical_defense_boost=1
+        critical_rate_boost=1
+        critical_rate_drop=1
+        dodge_boost=1
 
 
 

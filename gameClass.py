@@ -60,6 +60,7 @@ class Game:
     def init_characters(self):
         self.alchemist = character.Alchemist(self)
         self.knight = character.Knight(self)
+        self.priest = character.Priest(self)
         self.plagued = character.Plagued(self)
 
     def init_items(self):

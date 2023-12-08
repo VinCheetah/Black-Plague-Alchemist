@@ -1,6 +1,7 @@
 import console
 from boundedValue import BoundedValue
 from config import MyDict, default_config
+from typing import Any, Type
 
 
 class Object:
@@ -24,6 +25,8 @@ class Object:
             print(f"{self.name} got initalized again")
 
     def __repr__(self):
+        if hasattr(self, "console_color"):
+            return self.console_color + self.name + console.RESET_ALL
         return self.name
 
     @classmethod
@@ -108,17 +111,36 @@ class FightSkill(Skill, Object):
 
     def init_config(self):
         super().init_config()
+        self.effects: dict[Type[FightStatus], float] = self.config._effects
         self.action_consumption: int = self.config.action_consumption
         self.cooldown: int = self.config.cooldown
         self.mono_target = True
         self.target_type: str = self.config.target_type  # self, enemy, ally, all
         self.target_number: int = self.config.target_number  # [1, +inf]
         self.damages: int = self.config.damages
+        self.heal: int = self.config.heal
         self.critical_rate: float = self.config.critical_rate
+        self.critical_damage_boost: float = self.config.critical_damage_boost
         self.dodge: float = self.config.dodge
 
     def applied(self, fight, target, origin, *args):
-        fight.apply_damage_skill(self, target, origin)
+        console.say(f"{origin} used {self} on {target}")
+        if self.damages > 0:
+            fight.apply_damage_skill(self, target, origin)
+        if self.heal > 0:
+            fight.apply_heal_skill(self, target, origin)
+        self.exp_reward()
+        self.apply_effects(target)
+
+    def apply_effects(self, target):
+        for effect, probability in self.effects.items():
+            if self.game.random_event(probability):
+                target.get_fight_status(effect.with_config(self.game))
+
+
+
+    def exp_reward(self):
+        pass
 
     def train(self):
         super().train()
@@ -219,7 +241,9 @@ class FightingCharacter(Character):
         self.defense_boost: float = self.config.defense_boost
         self.precision_boost: float = self.config.precision_boost
         self.dodge_boost: float = self.config.dodge_boost
-        self.critical_defense_boost:float = self.config.critical_defense_boost
+        self.critical_defense_boost: float = self.config.critical_defense_boost
+        self.critical_damage_boost: float = self.config.critical_damage_boost
+        self.heal_boost: float = self.config.heal_boost
 
         self.equipments: list = self.config.equipments
 
@@ -245,9 +269,11 @@ class FightingCharacter(Character):
 
     def fight_statuses_update(self):
         for status in self.fight_statuses:
+            status.duration -= 1
+            if self.game.random_event(status.damages_rate):
+                self.get_damage(status.damages)
             if status.duration == 0:
                 self.fight_statuses.remove(status)
-            status.duration -= 1
         for new_status in self.new_fight_statuses:
             self.get_fight_status(new_status)
         self.new_fight_statuses = []
@@ -256,7 +282,10 @@ class FightingCharacter(Character):
         self.new_fight_statuses.append(status)
 
     def get_fight_status(self, new_status):
-        console.say(f"{self} is now {new_status} for {new_status.duration}")
+        console.say(f"{self} is now {new_status} for {new_status.duration} turns !", "warning")
+        for fs in self.fight_statuses:
+            if type(fs) is type(new_status):
+                self.fight_statuses.remove(fs)
         self.fight_statuses.append(new_status)
 
     def attack_stop(self):
@@ -471,7 +500,7 @@ class Consumable(Item):
 
     def init_config(self):
         super().init_config()
-        self.effects: list[Status] = self.config.effects
+        self.effects: dict[Type[FightStatus], int] = self.config._effects
 
 
 class Potion(Consumable):
@@ -495,7 +524,10 @@ class Potion(Consumable):
         super().init_config()
         self.required_level = self.config.required_level
         self.target = self.config.target
-        self.damage = self.config.damage
+        self.damages = self.config.damages
+        self.dodge = self.config.dodge
+        self.critical_rate=0
+        self.critical_damage_boost=1
 
     def useful(self, fight, character: FightingCharacter) -> bool:
         return True
@@ -522,10 +554,11 @@ class Potion(Consumable):
         else:
             raise NotImplementedError
 
-    def applied(self, character: FightingCharacter):
-        character.get_damage(self.damage)
-        for effect in self.effects:
-            character.add_status(effect)
+    def applied(self, fight, target: FightingCharacter, origin: FightingCharacter):
+        fight.apply_damage_skill(self, target, origin)
+        for effect, probability in self.effects.items():
+            if self.game.random_event(probability):
+                target.get_fight_status(effect.with_config(self.game))
 
 
 
@@ -604,16 +637,23 @@ class FightStatus(Object):
 
     def init_config(self):
         super().init_config()
+        self.name = self.config.name
+
+        self.damages = self.config.damages
+        self.damages_rate = self.config.damages_rate
+        self.attack_stop = self.config.attack_stop
+        self.console_color = self.config.console_color
         self.duration = self.config.duration
         self.precision_boost = self.config.precision_boost
         self.damage_boost = self.config.damage_boost
         self.defense_boost = self.config.defense_boost
-        self.health_boost = self.config.health_boost
-        self.health_drop = self.config.health_drop
+        self.heal_boost = self.config.heal_boost
+        self.heal_drop = self.config.heal_drop
         self.critical_damage_boost = self.config.critical_damage_boost
         self.critical_defense_boost = self.config.critical_defense_boost
         self.critical_rate_boost = self.config.critical_rate_boost
         self.critical_rate_drop = self.config.critical_rate_drop
+        self.dodge_boost = self.config.dodge_boost
 
 
 

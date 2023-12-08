@@ -1,5 +1,5 @@
 from queue import PriorityQueue
-from object_classes import FightSkill, FightingCharacter, PlayableCharacter
+from object_classes import FightSkill, FightingCharacter, PlayableCharacter, Monster
 from config import MyDict
 from gameClass import Game
 from skills import FightSkill
@@ -11,6 +11,7 @@ class Fight:
 
     def __init__(self, game: Game, config: MyDict | dict):
         self.game: Game = game
+        self.slow = True
         self.config: MyDict = game.config.fight.basics | config
         self.escape_probability: float = self.config.escape_probability
         self.player_team: list[FightingCharacter] = self.config.player_team
@@ -27,13 +28,19 @@ class Fight:
         for character in self.enemy_team + self.player_team:
             self.priority_queue.put_nowait((character.attack_rate, character))
 
+        for character in self.player_team:
+            if isinstance(character, Monster):
+                character.console_color = console.BLUE
+
     def start(self) -> None:
         console.say("Fight have started")
         while not self.fight_over:
-            console.print_fight(self)
             time, character = self.priority_queue.get_nowait()
             if character.is_defeated():
                 continue
+            if self.slow:
+                input()
+            console.print_fight(self)
             self.game.wait(.5)
             character.say("My turn !")
             self.action(character)
@@ -79,20 +86,24 @@ class Fight:
         else:
             raise NotImplementedError
 
-    def heal_attack(self, skill, target, origin):
-        target_heal_boost = target.compute_boost("heal")
-
-        return
-
     def apply_damage_skill(self, skill, target: FightingCharacter, origin: FightingCharacter):
         target.get_damage(self.damage_attack(skill, target, origin))
 
-    def damage_attack(self, skill, target, origin):
+    def apply_heal_skill(self, skill, target: FightingCharacter, origin: FightingCharacter):
+        target.get_damage(-self.heal_attack(skill, target, origin))
+
+    @staticmethod
+    def heal_attack(skill, target: FightingCharacter, origin: FightingCharacter) -> int:
+        target_heal_boost = target.compute_boost("heal", skill)
+        origin_damage_boost = origin.compute_boost("damage", skill)
+        return skill.heal * target_heal_boost * origin_damage_boost
+
+    def damage_attack(self, skill, target: FightingCharacter, origin: FightingCharacter) -> int:
         if not self.is_dodged(skill, target, origin):
             target_defense_boost = target.compute_boost("defense", skill)
             origin_attack_boost = origin.compute_boost("damage", skill)
             critical_boost = self.critical_boost(skill, target, origin)
-            return skill.damages * critical_boost * target_defense_boost * origin_attack_boost
+            return int(skill.damages * critical_boost / target_defense_boost * origin_attack_boost)
         else:
             console.say(f"{skill} made by {origin} on {target} is dodged !", "warning")
             return 0
@@ -117,12 +128,12 @@ class Fight:
         return self.game.random_event(skill.critical_rate * origin_boost / target_drop)
 
     def action(self, character: FightingCharacter) -> None:
+        character.fight_statuses_update()
         if not character.attack_stop():
             skill, target, add_args = self.player_action(character) if isinstance(character, PlayableCharacter) else self.enemy_action(character)
             skill.applied(self, target, character, *add_args)
             if target.is_defeated():
                 self.defeat_character(target)
-        character.fight_statuses_update()
 
     def escape(self) -> None:
         if self.game.random_event(self.escape_probability):

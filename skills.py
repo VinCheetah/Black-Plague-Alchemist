@@ -22,7 +22,7 @@ class Punch(FightSkill):
 
 
 class SwordSlash:
-    ...
+    path = "sword_slash"
 
 
 class PotionThrow(FightSkill):
@@ -31,8 +31,7 @@ class PotionThrow(FightSkill):
     def fight_selected(self, fight, character) -> list:
         if self.game.io_mode == "console":
             potion = console.request("Which potion would you like to throw:",
-                            [item for item, num in self.game.inventory.items() if
-                             isinstance(item, Potion) and num > 0],
+                            [item for item, num in self.game.inventory.items() if isinstance(item, Potion) and num > 0],
                             recommended_filter=lambda pot: pot.useful(fight, character),
                             valid_filter=lambda pot: pot.level_required(character))
             return [potion]
@@ -47,7 +46,20 @@ class PotionThrow(FightSkill):
     def applied(self, fight, target, origin, *add_args):
         assert len(add_args) == 1
         potion = add_args[0]
-        potion.applied(target)
+        potion.applied(fight, target, origin)
+        self.exp_reward()
+
+
+class Curse(FightSkill):
+    path = "curse"
+
+
+class AngelBenediction(FightSkill):
+    path = "angel_benediction"
+
+
+class SatanClawStrike(FightSkill):
+    path = "satan_claw_strike"
 
 
 class Meteor(FightSkill):

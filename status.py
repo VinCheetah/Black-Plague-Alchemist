@@ -33,12 +33,30 @@ class Stunned(FightStatus):
     path = "stunned"
 
 
+class Cursed(FightStatus):
+    path = "cursed"
+
+
+class Regenerated(FightStatus):
+    path = "regenerated"
+
+
+class Frenetic(FightStatus):
+    path = "frenetic"
+
+
+class Untouchable(FightStatus):
+    path = "untouchable"
+
+
 class Bleeding(FightStatus):
     path = "bleeding"
 
 
 class Demotivated(FightStatus):
     path = "demotivated"
+
+
 
 
 

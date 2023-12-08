@@ -142,9 +142,8 @@ def say(what: str, who="bot", bold: bool = False, end: str = "\n", map_what: boo
 
 
 def life_bar(character, bar_size=20):
-    life_ratio = character.health / character.health.max
-    return GREEN_BG + int(bar_size * life_ratio) * " " + RED_BG + int(bar_size * (1 - life_ratio)) * " " + RESET_ALL
-
+    bar_life_size = int(character.health / character.health.max * bar_size)
+    return GREEN_BG + bar_life_size * " " + RED_BG + (bar_size - bar_life_size) * " " + RESET_ALL
 
 
 def print_fight(fight):
@@ -154,19 +153,21 @@ def print_fight(fight):
     for i in range(max(fight.player_team_size, fight.enemy_team_size)):
         temp = ""
         if len(ally) > i:
-            temp += ally[i].name + ": "
-            temp += " " * max(0, (15 - len(temp)))
+            fs_str = " | ".join(f"{fs}({fs.duration})" for fs in ally[i].fight_statuses)
+            temp += "*" + str(ally[i]) + "*:   " + fs_str + "   "
+            temp += " " * max(0, (30 - len(temp)))
             temp += life_bar(ally[i])
 
         temp2 = ""
         if len(enemy) > i:
-            temp2 += enemy[i].name + ": "
-            temp2 += " " * max(0, (15 - len(temp2)))
+            fs_str = " | ".join(f"{fs} ({fs.duration})" for fs in enemy[i].fight_statuses)
+            temp2 += "*" + str(enemy[i]) + "*:   " + fs_str + "   "
+            temp2 += " " * max(0, (30 - len(temp2)))
             temp2 += life_bar(enemy[i])
 
-        msg += temp + " " * max(70 - len(temp), 0) + temp2 + "\n\n"
+        msg += temp + " " * max(100 - len(temp), 10) + temp2 + "\n\n"
 
-    print(msg)
+    say(msg, map_what=True)
 
 
 
