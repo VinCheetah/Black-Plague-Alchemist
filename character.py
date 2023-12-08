@@ -41,24 +41,25 @@ class Baron(SideCharacter):
     path = "baron"
 
 
-
-
-
-
 class Plagued(Monster):
     path = "plagued"
+
 
 class Dragon(Monster):
     ...
 
+
 class PlaguedZombie(Monster):
     ...
+
 
 class PlaguedDog(Monster):
     ...
 
+
 class PlaguedRat(Monster):
     ...
+
 
 class PlaguedSpider(Monster):
     ...

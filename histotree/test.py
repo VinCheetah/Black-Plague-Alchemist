@@ -15,6 +15,7 @@ pygame.display.set_caption("Graph Drawer")
 points = []
 selected_point = None
 
+
 class OptionsVolet:
     def __init__(self, pos):
         self.pos = pos
@@ -33,12 +34,15 @@ class OptionsVolet:
             texte_rect.move_ip(0, i * 30)
             fenetre.blit(texte_surface, texte_rect)
 
+
 def dessiner_sommet(coord, couleur):
     pygame.draw.circle(fenetre, couleur, coord, 10)
+
 
 def dessiner_lignes():
     if len(points) > 1:
         pygame.draw.lines(fenetre, ROUGE, False, points, 2)
+
 
 def selectionner_sommet(pos_souris):
     for i, point in enumerate(points):
@@ -46,6 +50,7 @@ def selectionner_sommet(pos_souris):
         if distance < 10:
             return i
     return None
+
 
 running = True
 options_volet = None

@@ -9,7 +9,6 @@ from inspect import isclass
 
 
 class MyDict(UserDict):
-
     game = None
     debug = False
     small_debug = False
@@ -63,7 +62,6 @@ class MyDict(UserDict):
                 print(f"Pas de Game renseignée, je ne transforme pas")
             return data
 
-
     def get_val(self, name):
         if "mini_" + name in self.data and "maxi_" + name in self.data:
             return random.uniform(self.data["mini_" + name], self.data["maxi_" + name])
@@ -88,8 +86,6 @@ class MyDict(UserDict):
 
     # def __repr__(self):
     #     return "MyDict " + super(MyDict, self).__repr__()
-
-
 
 
 default_config = MyDict.get_default()

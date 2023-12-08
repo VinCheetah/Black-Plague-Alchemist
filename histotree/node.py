@@ -1,5 +1,3 @@
-
-
 class Condition:
     pass
 
@@ -14,7 +12,6 @@ class Condition:
 
 
 class Node:
-
     _id = 0
 
     def __init__(self):
@@ -50,10 +47,6 @@ class Node:
 
 
 class HistoTree:
-
     def __init__(self):
         self.root: Node
         self.graph: dict[Node, Node] = {}
-
-
-

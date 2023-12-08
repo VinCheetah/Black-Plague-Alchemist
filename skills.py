@@ -3,18 +3,16 @@ from object_classes import Skill, FightSkill
 from object_classes import Potion
 
 
-
-
 class Perception:
     ...
+
 
 class PotionCreation:
     ...
 
+
 class Speed:
     ...
-
-
 
 
 class Punch(FightSkill):
@@ -30,10 +28,12 @@ class PotionThrow(FightSkill):
 
     def fight_selected(self, fight, character) -> list:
         if self.game.io_mode == "console":
-            potion = console.request("Which potion would you like to throw:",
-                            [item for item, num in self.game.inventory.items() if isinstance(item, Potion) and num > 0],
-                            recommended_filter=lambda pot: pot.useful(fight, character),
-                            valid_filter=lambda pot: pot.level_required(character))
+            potion = console.request(
+                "Which potion would you like to throw:",
+                [item for item, num in self.game.inventory.items() if isinstance(item, Potion) and num > 0],
+                recommended_filter=lambda pot: pot.useful(fight, character),
+                valid_filter=lambda pot: pot.level_required(character),
+            )
             return [potion]
         else:
             raise NotImplementedError

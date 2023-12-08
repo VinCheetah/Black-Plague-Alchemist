@@ -1,4 +1,3 @@
-
 import random as rd
 from math import inf
 import time
@@ -14,7 +13,6 @@ import skills
 
 
 class Game:
-
     libs = [character, status, item, place, skills, console]
 
     def __init__(self):
@@ -108,7 +106,7 @@ class Game:
                 del self.inventory[item]
 
     def check_ingredients(self, recipe, nb_prod=1):
-        for (item, i) in recipe.items():
+        for item, i in recipe.items():
             if item not in self.inventory or self.inventory[item] < i * nb_prod:
                 console.say(f"Not enough *{item}*")
                 return False
@@ -116,7 +114,7 @@ class Game:
 
     def max_available(self, recipe):
         max_occ = inf
-        for (item, i) in recipe.items():
+        for item, i in recipe.items():
             if item not in self.inventory:
                 max_occ = 0
             else:

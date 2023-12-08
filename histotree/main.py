@@ -13,7 +13,6 @@ number = int | float
 
 
 class HistoTreeManager:
-
     def __init__(self):
         self.running: bool = False
         self.x: number = 0
@@ -22,7 +21,7 @@ class HistoTreeManager:
         self.view_center_x: number = 0
         self.view_center_y: number = 0
 
-        self.min_zoom: number = .1
+        self.min_zoom: number = 0.1
         self.max_zoom: number = 10
         self.zoom: BoundedValue = BoundedValue(1, self.min_zoom, self.max_zoom)
 
@@ -115,7 +114,7 @@ class HistoTreeManager:
 
     @staticmethod
     def dist(p1, p2):
-        return pow(pow(p1[0] - p2[0], 2) + pow(p1[1] - p2[1], 2), .5)
+        return pow(pow(p1[0] - p2[0], 2) + pow(p1[1] - p2[1], 2), 0.5)
 
     def view_x(self, x):
         return int((x - self.view_center_x) * self.zoom + self.width / 2)

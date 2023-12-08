@@ -2,7 +2,6 @@ import character
 
 
 class Events:
-
     def __init__(self, config):
         self.config = config
         self.name: str = self.config.name

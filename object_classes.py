@@ -5,7 +5,6 @@ from typing import Any, Type
 
 
 class Object:
-
     instances = list()
     non_init_instances = list()
 
@@ -37,34 +36,34 @@ class Object:
 
 
 class InitClass:
-
     def __init__(self):
         pass
 
-
         ###
-       #####
-      #######
-     #########
+
+    #####
+    #######
+    #########
     ###########
-   #############
-  ###############
- #################
+
+
+#############
+###############
+#################
 ###################
 ### S K I L L S ###
 ###################
- #################
-  ###############
-   #############
-    ###########
-     #########
-      #######
-       #####
-        ###
+#################
+###############
+#############
+###########
+#########
+#######
+#####
+###
 
 
 class Skill(Object):
-
     def __init__(self, game, prev_config=None):
         class_config = default_config.skill
         config = prev_config if prev_config is not None else MyDict()
@@ -93,7 +92,6 @@ class Skill(Object):
 
 
 class FightSkill(Skill, Object):
-
     def __init__(self, game, prev_config=None):
         class_config = default_config.skill.fight
         config = prev_config if prev_config is not None else MyDict()
@@ -137,8 +135,6 @@ class FightSkill(Skill, Object):
             if self.game.random_event(probability):
                 target.get_fight_status(effect.with_config(self.game))
 
-
-
     def exp_reward(self):
         pass
 
@@ -152,37 +148,39 @@ class FightSkill(Skill, Object):
     def request_target(self, fight, character, *add_args):
         return fight.request_target(self, character)
 
-
-            ###
-           #####
-          #######
-         #########
+        ###
+        #####
+        #######
+        #########
         ###########
-       #############
-      ###############
-     #################
+
+    #############
+    ###############
+    #################
     ###################
-   #####################
-  #######################
- #########################
+
+
+#####################
+#######################
+#########################
 ###########################
 ### C H A R A C T E R S ###
 ###########################
- #########################
-  #######################
-   #####################
-    ###################
-     #################
-      ###############
-       #############
-        ###########
-         #########
-          #######
-           #####
-            ###
+#########################
+#######################
+#####################
+###################
+#################
+###############
+#############
+###########
+#########
+#######
+#####
+###
+
 
 class Character(Object):
-
     def __init__(self, game, prev_config=None):
         class_config = default_config.character
         config = prev_config if prev_config is not None else MyDict()
@@ -211,7 +209,6 @@ class Character(Object):
 
 
 class FightingCharacter(Character):
-
     def __init__(self, game, prev_config=None):
         class_config = default_config.character.fighter
         config = prev_config if prev_config is not None else MyDict()
@@ -253,18 +250,22 @@ class FightingCharacter(Character):
 
     def compute_boost(self, attr, skill):
         new_attr = attr + "_boost"
-        return (getattr(self, new_attr) *
-                self.game.list_product([getattr(fs, new_attr) for fs in self.fight_statuses]) *
-                self.game.list_product([getattr(equip, new_attr) for equip in self.equipments]) *
-                self.game.list_product([getattr(status, new_attr) for status in self.fight_statuses]))
+        return (
+            getattr(self, new_attr)
+            * self.game.list_product([getattr(fs, new_attr) for fs in self.fight_statuses])
+            * self.game.list_product([getattr(equip, new_attr) for equip in self.equipments])
+            * self.game.list_product([getattr(status, new_attr) for status in self.fight_statuses])
+        )
         # Could add boost linked to skill
 
     def compute_drop(self, attr, skill):
         new_attr = attr + "_drop"
-        return (getattr(self, new_attr) *
-                self.game.list_product([getattr(fs, new_attr) for fs in self.fight_statuses]) *
-                self.game.list_product([getattr(equip, new_attr) for equip in self.equipments]) *
-                self.game.list_product([getattr(status, new_attr) for status in self.fight_statuses]))
+        return (
+            getattr(self, new_attr)
+            * self.game.list_product([getattr(fs, new_attr) for fs in self.fight_statuses])
+            * self.game.list_product([getattr(equip, new_attr) for equip in self.equipments])
+            * self.game.list_product([getattr(status, new_attr) for status in self.fight_statuses])
+        )
         # Could add drop linked to skill
 
     def fight_statuses_update(self):
@@ -302,7 +303,6 @@ class FightingCharacter(Character):
 
 
 class PlayableCharacter(FightingCharacter):
-
     def __init__(self, game, prev_config=None):
         class_config = default_config.character.playable
         config = prev_config if prev_config is not None else MyDict()
@@ -332,7 +332,6 @@ class PlayableCharacter(FightingCharacter):
 
 
 class SideCharacter(FightingCharacter):
-
     def __init__(self, game, prev_config=None):
         class_config = default_config.character.side
         config = prev_config if prev_config is not None else MyDict()
@@ -353,7 +352,6 @@ class SideCharacter(FightingCharacter):
 
 
 class Monster(FightingCharacter):
-
     def __init__(self, game, prev_config=None):
         class_config = default_config.character.monster
         config = prev_config if prev_config is not None else MyDict()
@@ -372,29 +370,31 @@ class Monster(FightingCharacter):
     def init_config(self):
         super().init_config()
 
-
         #
-       ###
-      #####
-     #######
+
+    ###
+    #####
+    #######
     #########
-   ###########
-  #############
- ###############
+
+
+###########
+#############
+###############
 #################
 ### I T E M S ###
 #################
- ###############
-  #############
-   ###########
-    #########
-     #######
-      #####
-       ###
-        #
+###############
+#############
+###########
+#########
+#######
+#####
+###
+#
+
 
 class Item(Object):
-
     def __init__(self, game, prev_config=None):
         class_config = default_config.item
         config = prev_config if prev_config is not None else MyDict()
@@ -424,7 +424,6 @@ class Item(Object):
 
 
 class Craftable:
-
     def __init__(self):
         self.config |= self.game.config.item.craftable.basics
 
@@ -434,7 +433,6 @@ class Craftable:
 
 
 class Equipment(Item):
-
     def __init__(self, game, prev_config=None):
         class_config = default_config.item.equipment
         config = prev_config if prev_config is not None else MyDict()
@@ -458,7 +456,6 @@ class Equipment(Item):
 
 
 class Weapon(Equipment):
-
     def __init__(self, game, prev_config=None):
         class_config = default_config.item.equipment.weapon
         config = prev_config if prev_config is not None else MyDict()
@@ -482,7 +479,6 @@ class Weapon(Equipment):
 
 
 class Consumable(Item):
-
     def __init__(self, game, prev_config=None):
         class_config = default_config.item.consumable
         config = prev_config if prev_config is not None else MyDict()
@@ -504,7 +500,6 @@ class Consumable(Item):
 
 
 class Potion(Consumable):
-
     def __init__(self, game, prev_config=None):
         class_config = default_config.item.consumable.potion
         config = prev_config if prev_config is not None else MyDict()
@@ -526,8 +521,8 @@ class Potion(Consumable):
         self.target = self.config.target
         self.damages = self.config.damages
         self.dodge = self.config.dodge
-        self.critical_rate=0
-        self.critical_damage_boost=1
+        self.critical_rate = 0
+        self.critical_damage_boost = 1
 
     def useful(self, fight, character: FightingCharacter) -> bool:
         return True
@@ -546,10 +541,12 @@ class Potion(Consumable):
 
     def find_target(self, fight, character: FightingCharacter) -> FightingCharacter:
         if self.game.io_mode == "console":
-            target = console.request("Select a target:",
-                                     fight.player_team + fight.enemy_team,
-                                     recommended_filter=lambda x: self.useful_on(x),
-                                     valid_filter=lambda x: x in (fight.enemy_team if (character in fight.player_team) ^ (self.target == "ally") else fight.player_team))
+            target = console.request(
+                "Select a target:",
+                fight.player_team + fight.enemy_team,
+                recommended_filter=lambda x: self.useful_on(x),
+                valid_filter=lambda x: x in (fight.enemy_team if (character in fight.player_team) ^ (self.target == "ally") else fight.player_team),
+            )
             return target
         else:
             raise NotImplementedError
@@ -561,11 +558,7 @@ class Potion(Consumable):
                 target.get_fight_status(effect.with_config(self.game))
 
 
-
-
-
 class Resource(Item):
-
     def __init__(self, game, prev_config=None):
         class_config = default_config.item.resource
         config = prev_config if prev_config is not None else MyDict()
@@ -584,42 +577,43 @@ class Resource(Item):
     def init_config(self):
         super().init_config()
 
-
-              ###
-             #####
-            #######
-           #########
-          ###########
-         #############
+        ###
+        #####
+        #######
+        #########
+        ###########
+        #############
         ###############
-       #################
-      ###################
-     #####################
+
+    #################
+    ###################
+    #####################
     #######################
-   #########################
-  ###########################
- #############################
+
+
+#########################
+###########################
+#############################
 ###############################
 ### F I G H T   S T A T U S ###
 ###############################
- #############################
-  ###########################
-   #########################
-    #######################
-     #####################
-      ###################
-       #################
-        ###############
-         #############
-          ###########
-           #########
-            #######
-             #####
-              ###
+#############################
+###########################
+#########################
+#######################
+#####################
+###################
+#################
+###############
+#############
+###########
+#########
+#######
+#####
+###
 
 
 class FightStatus(Object):
-
     def __init__(self, game, prev_config=None):
         class_config = default_config.fight_status
         config = MyDict(prev_config if prev_config is not None else {})
@@ -655,30 +649,31 @@ class FightStatus(Object):
         self.critical_rate_drop = self.config.critical_rate_drop
         self.dodge_boost = self.config.dodge_boost
 
-
-
         ###
-       #####
-      #######
-     #########
+
+    #####
+    #######
+    #########
     ###########
-   #############
-  ###############
- #################
+
+
+#############
+###############
+#################
 ###################
 ### S T A T U S ###
 ###################
- #################
-  ###############
-   #############
-    ###########
-     #########
-      #######
-       #####
-        ###
+#################
+###############
+#############
+###########
+#########
+#######
+#####
+###
+
 
 class Status(Object):
-
     def __init__(self, game, prev_config=None):
         class_config = default_config.status
         config = MyDict(prev_config if prev_config is not None else {})
@@ -693,4 +688,3 @@ class Status(Object):
             console.say(f"{type(self)} do not have path")
         config |= class_config.basics
         super().__init__(game, config)
-

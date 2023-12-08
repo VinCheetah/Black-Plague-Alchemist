@@ -8,7 +8,6 @@ import random as rd
 
 
 class Fight:
-
     def __init__(self, game: Game, config: MyDict | dict):
         self.game: Game = game
         self.slow = True
@@ -41,7 +40,7 @@ class Fight:
             if self.slow:
                 input()
             console.print_fight(self)
-            self.game.wait(.5)
+            self.game.wait(0.5)
             character.say("My turn !")
             self.action(character)
             self.priority_queue.put_nowait((time + character.attack_rate, character))
@@ -160,7 +159,3 @@ class Fight:
             if character.health != character.health.max:
                 return False
         return True
-
-
-
-

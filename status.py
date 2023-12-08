@@ -13,6 +13,7 @@ class Neutral(Status):
 # T #
 #####
 
+
 class Poisoned(FightStatus):
     path = "poisoned"
 
@@ -55,10 +56,6 @@ class Bleeding(FightStatus):
 
 class Demotivated(FightStatus):
     path = "demotivated"
-
-
-
-
 
 
 class Laughing(Status):

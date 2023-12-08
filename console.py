@@ -4,38 +4,38 @@ from typing import Any
 input_str = "\t --> "
 
 # Foreground text colors
-BLACK = '\033[30m'
-RED = '\033[31m'
-GREEN = '\033[32m'
-YELLOW = '\033[33m'
-BLUE = '\033[34m'
-MAGENTA = '\033[35m'
-CYAN = '\033[36m'
-WHITE = '\033[37m'
+BLACK = "\033[30m"
+RED = "\033[31m"
+GREEN = "\033[32m"
+YELLOW = "\033[33m"
+BLUE = "\033[34m"
+MAGENTA = "\033[35m"
+CYAN = "\033[36m"
+WHITE = "\033[37m"
 
 # Background colors
-BLACK_BG = '\033[40m'
-RED_BG = '\033[41m'
-GREEN_BG = '\033[42m'
-YELLOW_BG = '\033[43m'
-BLUE_BG = '\033[44m'
-MAGENTA_BG = '\033[45m'
-CYAN_BG = '\033[46m'
-WHITE_BG = '\033[47m'
+BLACK_BG = "\033[40m"
+RED_BG = "\033[41m"
+GREEN_BG = "\033[42m"
+YELLOW_BG = "\033[43m"
+BLUE_BG = "\033[44m"
+MAGENTA_BG = "\033[45m"
+CYAN_BG = "\033[46m"
+WHITE_BG = "\033[47m"
 
 # Styles
-BOLD = '\033[1m'
-UNDERLINE = '\033[4m'
-ITALIC = '\033[3m'
-STRIKETHROUGH = '\033[9m'
-RESET_ALL = '\033[0m'
-CLEAR = '\033[H\033[J'
-CLEAR_TERMINAL = '\033c'
+BOLD = "\033[1m"
+UNDERLINE = "\033[4m"
+ITALIC = "\033[3m"
+STRIKETHROUGH = "\033[9m"
+RESET_ALL = "\033[0m"
+CLEAR = "\033[H\033[J"
+CLEAR_TERMINAL = "\033c"
 
-NO_ITALIC = '\033[23m'
-NO_UNDERLINE = '\033[24m'
-NO_BOLD = '\033[22m'
-NO_STRIKETHROUGH = '\033[29m'
+NO_ITALIC = "\033[23m"
+NO_UNDERLINE = "\033[24m"
+NO_BOLD = "\033[22m"
+NO_STRIKETHROUGH = "\033[29m"
 
 
 def get_input() -> str:
@@ -43,8 +43,7 @@ def get_input() -> str:
 
 
 def filter_split(iterable, func_filter=None):
-    return (type(iterable)(filter(func_filter, iterable) if func_filter is not None else iterable),
-            type(iterable)(filter(lambda x: not func_filter(x), iterable) if func_filter is not None else []))
+    return (type(iterable)(filter(func_filter, iterable) if func_filter is not None else iterable), type(iterable)(filter(lambda x: not func_filter(x), iterable) if func_filter is not None else []))
 
 
 def request(question: str, choices: list[Any], recommended_filter=None, valid_filter=None) -> Any:
@@ -56,9 +55,9 @@ def request(question: str, choices: list[Any], recommended_filter=None, valid_fi
     recommended, not_recommended = filter_split(valid_choices, recommended_filter)
     say(question, CYAN, map_what=True)
     for i, choice in enumerate(recommended):
-        say("\t"+str(1 + i)+" : *" + str(choice) + "*", map_what=True)
+        say("\t" + str(1 + i) + " : *" + str(choice) + "*", map_what=True)
     for i, choice in enumerate(not_recommended):
-        say("\t"+str(1 + i + len(recommended))+" : *" + str(choice) + "*  _(not recommended)_", map_what=True)
+        say("\t" + str(1 + i + len(recommended)) + " : *" + str(choice) + "*  _(not recommended)_", map_what=True)
     for choice in wrong_choices:
         say("\t  : " + str(choice) + "  _(impossible choice)_", map_what=True)
     ans = get_input()
@@ -68,7 +67,7 @@ def request(question: str, choices: list[Any], recommended_filter=None, valid_fi
 
 
 def answer_yn(question: str, default: bool = True) -> bool:
-    say(question + " (default: "+("yes" if default else "no")+")", map_what=True)
+    say(question + " (default: " + ("yes" if default else "no") + ")", map_what=True)
     ans = get_input()
     while ans.lower() not in ["", "yes", "y", "no", "n"]:
         ans = get_input()
@@ -84,6 +83,7 @@ def request_number(question: str, min_val: int | float = -inf, max_val: int | fl
     while not (ans.isnumeric() and min_val <= ans_type(ans) <= max_val):
         ans = get_input()
     return ans_type(ans)
+
 
 def match_transform_begin(transform: str) -> str:
     match transform:
@@ -113,6 +113,7 @@ def match_transform_over(transform: str) -> str:
 
 def say(what: str, who="bot", bold: bool = False, end: str = "\n", map_what: bool = False, body_color: str = "") -> None:
     from object_classes import Character
+
     bold_str = BOLD if bold else ""
     if who == "bot":
         who_str = ""
@@ -168,13 +169,3 @@ def print_fight(fight):
         msg += temp + " " * max(100 - len(temp), 10) + temp2 + "\n\n"
 
     say(msg, map_what=True)
-
-
-
-
-
-
-
-
-
-

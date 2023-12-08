@@ -1,5 +1,4 @@
 class DialogueNode:
-
     def __init__(self, config):
         self.priority: int = config.priority
         self.children: list[DialogueNode] = config.childrens

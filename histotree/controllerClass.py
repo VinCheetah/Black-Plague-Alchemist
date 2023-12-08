@@ -2,7 +2,6 @@ import pygame
 
 
 class Controller:
-
     name = "Default Controller"
     controller_debug = False
 
@@ -73,16 +72,17 @@ class Controller:
 
 
 class MainController(Controller):
-
     name = "Main Controller"
     controller_debug = False
 
     def create_commands(self):
-        return ({
-                    pygame.K_ESCAPE: self.handler.stop_running,
-                },
-                {
-                    "QUIT": self.handler.stop_running,
-                    "RESIZE": self.handler.screen_resize,
-                },
-                {})
+        return (
+            {
+                pygame.K_ESCAPE: self.handler.stop_running,
+            },
+            {
+                "QUIT": self.handler.stop_running,
+                "RESIZE": self.handler.screen_resize,
+            },
+            {},
+        )

@@ -156,4 +156,5 @@ class BoundedValue(object):
 
 class InvalidExtremum(Exception):
     """Raised when extremes are not valid"""
+
     pass

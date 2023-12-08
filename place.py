@@ -4,7 +4,6 @@ import events
 
 
 class Place:
-
     def __init__(self, config):
         self.config = config
         self.name: str = self.config.name
@@ -54,5 +53,3 @@ class Home:
 
 class HomeVillage:
     ...
-
-

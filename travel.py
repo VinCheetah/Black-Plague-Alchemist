@@ -2,7 +2,5 @@ class Travel:
     ...
 
 
-
 class TravelEvent:
     ...
-
