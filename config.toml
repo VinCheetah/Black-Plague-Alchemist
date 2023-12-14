@@ -12,6 +12,7 @@ title="default_config"
 
         console_color="*CYAN"
         name="Character"
+        statuses=[]
 
     [character.fighter]
 
@@ -94,6 +95,7 @@ title="default_config"
         [skill.fight.basics]
 
             name = "Unnamed fight skill"
+            use_weapon=false
             console_color="*BLUE"
             action_consumption=10
             cooldown=0
@@ -116,6 +118,7 @@ title="default_config"
         [skill.fight.potion_throw]
 
             name="Potion Throw"
+            use_weapon=true
 
         [skill.fight.meteor]
 
@@ -153,8 +156,10 @@ title="default_config"
 
     [fight.basics]
 
+        slow=false
         escape_probability=0.8
         enemy_tactic="random"
+
         rewards={"*gold"=1}
 
 
@@ -181,26 +186,9 @@ title="default_config"
         duration=1
         damages_rate=1
         damages=0
+        heal=0
         console_color="*YELLOW"
-
-    # Probabilities
         cure=0
-        attack_stop=false
-        attack_rate_boost=1
-        attack_rate_drop=1
-        precision_boost=1
-        precision_drop=1
-        damage_boost=1
-        damage_drop=1
-        defense_boost=1
-        heal_boost=1
-        heal_drop=1
-        critical_damage_boost=1
-        critical_defense_boost=1
-        critical_rate_boost=1
-        critical_rate_drop=1
-        dodge_boost=1
-        dodge_drop=1
 
     [fight_status.poisoned]
 
@@ -236,7 +224,7 @@ title="default_config"
 
         name="Regenerated"
         duration=3
-        damages=-15
+        heal=15
 
     [fight_status.frenetic]
 
@@ -266,6 +254,21 @@ title="default_config"
             known=false
             recipe={}
 
+    [item.weapon]
+
+        [item.weapon.basics]
+
+            random_damages=false
+            required_level=0
+            target_type="enemy"
+            damages=0
+            min_damages=0
+            max_damages=0
+            heal=0
+            dodge=0
+            critical_rate=0
+            critical_damage_boost=1
+            effects={}
 
     [item.resource]
 
@@ -303,15 +306,8 @@ title="default_config"
             description="Simplest shield to reduce damages"
             recipe={"*wood_stick"=3}
 
-        [item.equipment.weapon]
 
-            [item.equipment.weapon.basics]
-
-                min_damage=0
-                max_damage=0
-                effects=[]
-
-            [item.equipment.weapon.iron_sword]
+            [item.equipment.iron_sword]
 
                 name="Iron Sword"
                 description="Slicing sword, not very powerful, but a great first companion"
@@ -331,13 +327,7 @@ title="default_config"
             [item.consumable.potion.basics]
 
                 name="Unamed potion"
-                target="enemy"
                 required_level=1
-                damages=0
-                heal=0
-                dodge=0
-                critical_rate=0
-                critical_damage_boost=1
 
             [item.consumable.potion.damage]
 
@@ -348,33 +338,38 @@ title="default_config"
 
                 name="Poison Potion"
                 required_level=1
-                damages=10
                 effects={"$Poisoned"=1}
 
             [item.consumable.potion.heal]
 
                 name="Heal Potion"
-                target="ally"
+                target_type="ally"
                 heal=20
 
 
-[fight_enhancer]
+[fight_modifier]
 
-    [fight_enhancer.basics]
+    [fight_modifier.basics]
 
-        attack_stop=false
+        stop_attack=false
         attack_rate_boost=1
         attack_rate_drop=1
         precision_boost=1
+        precision_drop=1
         damage_boost=1
+        damage_drop=1
         defense_boost=1
+        defense_drop=1
         heal_boost=1
         heal_drop=1
         critical_damage_boost=1
+        critical_damage_drop=1
         critical_defense_boost=1
+        critical_defense_drop=1
         critical_rate_boost=1
         critical_rate_drop=1
         dodge_boost=1
+        dodge_drop=1
 
 
 

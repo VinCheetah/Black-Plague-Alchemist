@@ -9,7 +9,7 @@ class Iron(Resource):
     path = "iron"
 
 
-class IronSword(Weapon, Craftable):
+class IronSword(Equipment, Weapon, Craftable):
     path = "iron_sword"
 
 
@@ -23,12 +23,6 @@ class DamagePotion(Potion):
 
 class HealPotion(Potion):
     path = "heal"
-
-    def useful(self, fight, character) -> bool:
-        return not fight.team_full_life(character, "ally")
-
-    def useful_on(self, character) -> bool:
-        return character.health != character.health.max
 
 
 class PoisonPotion(Potion):

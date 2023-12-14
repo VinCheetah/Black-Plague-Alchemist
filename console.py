@@ -121,13 +121,17 @@ def say(what: str, who="bot", bold: bool = False, end: str = "\n", map_what: boo
         who_str = who.console_color + who.name + RESET_ALL + ": "
     elif who == "warning":
         who_str = YELLOW + "[WARNING]: " + RESET_ALL
+    elif who == "error":
+        who_str = RED + "[ERROR]: " + RESET_ALL + BOLD
+    elif who == "fight_comment":
+        who_str = BOLD + CYAN + "[FIGHT UPDATE]: " + RESET_ALL
     else:
         who_str = who
     last_chars = []
     if map_what:
         what_map = ""
         for char in what:
-            if char in ["*", "_", "|"]:
+            if char in ["*", "_"]:
                 if len(last_chars) > 0 and last_chars[-1] == char:
                     what_map += match_transform_over(last_chars.pop())
                 else:
@@ -144,7 +148,9 @@ def say(what: str, who="bot", bold: bool = False, end: str = "\n", map_what: boo
 
 def life_bar(character, bar_size=20):
     bar_life_size = int(character.health / character.health.max * bar_size)
-    return GREEN_BG + bar_life_size * " " + RED_BG + (bar_size - bar_life_size) * " " + RESET_ALL
+    life_str = character.health.str_max(to_int=True)
+    msg = " " * ((bar_size - len(life_str)) // 2) + life_str + " " * (bar_size - (bar_size - len(life_str)) // 2 - len(life_str))
+    return GREEN_BG + BLACK + BOLD + msg[:bar_life_size] + RED_BG + msg[bar_life_size:] + RESET_ALL
 
 
 def print_fight(fight):
@@ -154,9 +160,12 @@ def print_fight(fight):
     for i in range(max(fight.player_team_size, fight.enemy_team_size)):
         temp = ""
         if len(ally) > i:
-            fs_str = " | ".join(f"{fs}({fs.duration})" for fs in ally[i].fight_statuses)
-            temp += "*" + str(ally[i]) + "*:   " + fs_str + "   "
-            temp += " " * max(0, (30 - len(temp)))
+            fs_str = " | ".join(f"{fs}({fs.duration})" for fs in ally[i].fight_statuses) + "*"
+            if i >= len(fight.player_team):
+                temp += STRIKETHROUGH + str(ally[i]) + NO_STRIKETHROUGH
+            else:
+                temp += str(ally[i])
+            temp += "*:   " + fs_str + "   " + " " * max(0, (30 - len(temp)))
             temp += life_bar(ally[i])
 
         temp2 = ""

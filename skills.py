@@ -26,28 +26,19 @@ class SwordSlash:
 class PotionThrow(FightSkill):
     path = "potion_throw"
 
-    def fight_selected(self, fight, character) -> list:
+    def fight_selected(self, fight, character) -> None:
         if self.game.io_mode == "console":
-            potion = console.request(
+            self.weapon = console.request(
                 "Which potion would you like to throw:",
                 [item for item, num in self.game.inventory.items() if isinstance(item, Potion) and num > 0],
                 recommended_filter=lambda pot: pot.useful(fight, character),
-                valid_filter=lambda pot: pot.level_required(character),
+                valid_filter=lambda pot: pot.level_required(self),
             )
-            return [potion]
         else:
             raise NotImplementedError
 
-    def request_target(self, fight, character, *add_args):
-        assert len(add_args) == 1
-        potion = add_args[0]
-        return potion.find_target(fight, character)
-
-    def applied(self, fight, target, origin, *add_args):
-        assert len(add_args) == 1
-        potion = add_args[0]
-        potion.applied(fight, target, origin)
-        self.exp_reward()
+    def request_target(self, fight, character):
+        return self.weapon.find_target(fight, character)
 
 
 class Curse(FightSkill):
