@@ -236,9 +236,9 @@ class MainWindow(Window):
             end = n2.x - math.cos(angle) * (n2.size - 3), n2.y - math.sin(angle) * (n2.size - 3)
 
             # Calculate the arrowhead points
-            zoom = self.manager.zoom * 20
-            arrowhead1 = end[0] - zoom * math.cos(angle - math.pi / 6), end[1] - zoom * math.sin(angle - math.pi / 6)
-            arrowhead2 = end[0] - zoom * math.cos(angle + math.pi / 6), end[1] - zoom * math.sin(angle + math.pi / 6)
+            size =  20
+            arrowhead1 = end[0] - size * math.cos(angle - math.pi / 6), end[1] - size * math.sin(angle - math.pi / 6)
+            arrowhead2 = end[0] - size * math.cos(angle + math.pi / 6), end[1] - size * math.sin(angle + math.pi / 6)
 
             # Draw the arrowhead
             pygame.draw.polygon(self.content, self.link_color, self.manager.list_view([end, arrowhead1, arrowhead2]))
@@ -265,7 +265,7 @@ class MainWindow(Window):
 
 class ToolWindow(Window):
 
-    height_button = 200
+    height_button = 100
 
     def additionnal_init(self):
         self.mode = ""
@@ -300,16 +300,13 @@ class DebugWindow(Window):
 
     def additionnal_init(self):
         self.text = ""
-        self.old_text = ""
         self.down = True
 
     def update_content(self):
-        if self.down or self.text != self.old_text:
-            self.old_text = self.text
-            if self.down:
-                self.view_y.set_value(max(0, self.content_height - self.height))
-            self.content, self.content_height = self.format_text(self.text, self.font)
-            self.update_extremum_view()
+        if self.down:
+            self.view_y.set_value(max(0, self.content_height - self.height))
+        self.content, self.content_height = self.format_text(self.text, self.font)
+        self.update_extremum_view()
 
     def add_text(self, text):
         self.text += text

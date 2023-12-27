@@ -96,6 +96,7 @@ class HistoTreeManager:
                     self.load(self.favorite_file)
 
         self.main_window.set_window()
+        self.add_debug("Petite console de debug... essai \"p\"\n")
 
 
     def save(self, file_name) -> None:
@@ -105,7 +106,7 @@ class HistoTreeManager:
         file.touch(exist_ok=True)
         with open(file, "wb") as f:
             pickle.dump(self.histo_tree, f, pickle.HIGHEST_PROTOCOL)
-        print(f"{file_name} has been saved successfully !")
+        self.add_debug(f"{file_name} has been saved successfully !")
 
     def load_auto_save(self) -> None:
         self.load(self.auto_save_file)

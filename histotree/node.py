@@ -118,6 +118,8 @@ class HistoTree:
 
     def delete_node(self, node):
         self.nodes.discard(node)
+        if node == self.root:
+            self._root = None
         link_bin = set()
         for link in self.links:
             if node in link:

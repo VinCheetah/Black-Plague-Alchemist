@@ -311,7 +311,8 @@ class ToolController(Controller):
                 node = self.clicked_node(p, 1.5)
                 if node is not None:
                     if self.aux is not None:
-                        self.manager.histo_tree.add_link(self.aux, node)
+                        if self.aux != node:
+                            self.manager.histo_tree.add_link(self.aux, node)
                         self.aux = None
                     else:
                         self.aux = node
