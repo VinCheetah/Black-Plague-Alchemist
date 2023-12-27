@@ -201,8 +201,11 @@ title="default_config"
 
         name="Lucky"
         duration=3
-        precision_boost=2
-        critical_rate_boost=3
+        precision_boost=3
+        critical_rate_boost=10
+        damage_boost=10
+        defense_boost=10
+        dodge_boost=5
 
     [fight_status.stunned]
 
