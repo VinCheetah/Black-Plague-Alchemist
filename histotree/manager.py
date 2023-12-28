@@ -7,7 +7,7 @@ import button
 import pickle
 import os
 from boundedValue import BoundedValue
-from node import Node, HistoTree
+from node import Node, Link, HistoTree
 import controllerClass
 import window
 
@@ -44,6 +44,7 @@ class HistoTreeManager:
         self.debug_controller: controllerClass.DebugController = controllerClass.DebugController(self)
         self.tool_controller: controllerClass.ToolController = controllerClass.ToolController(self)
         self.node_controller: controllerClass.NodeController = controllerClass.NodeController(self)
+        self.link_controller: controllerClass.LinkController = controllerClass.LinkController(self)
         self.selection_controller: controllerClass.SelectionController = controllerClass.SelectionController(self)
         self.map_controller: controllerClass.MapController = controllerClass.MapController(self)
         self.menu_controller: controllerClass.MenuController = controllerClass.MenuController(self)
@@ -190,17 +191,25 @@ class HistoTreeManager:
             self.unselect()
 
         self.selected = selected
+        self.selection_controller.enable()
         if isinstance(selected, Node):
             self.tool_window.retire_windows()
             self.tool_window.mode = "node"
             self.tool_window.add_windows()
             self.node_controller.enable()
+        elif isinstance(selected, Link):
+            self.tool_window.retire_windows()
+            self.tool_window.mode = "link"
+            self.tool_window.add_windows()
+            self.link_controller.enable()
 
 
     def unselect(self):
         if self.selected is not None:
             if isinstance(self.selected, Node):
                 self.node_controller.disable()
+            elif isinstance(self.selected, Link):
+                self.link_controller.disable()
             self.selection_controller.disable()
             self.selected = None
             self.tool_window.retire_windows()
@@ -249,7 +258,7 @@ class HistoTreeManager:
         self.view_move(0, 0)
 
     def view_move(self, x, y):
-        iter = 40
+        iter = 20
         self.move_map_anim = True
         self.target_x = x
         self.target_y = y

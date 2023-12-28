@@ -98,6 +98,14 @@ class Controller:
                 sel_node, dist = node, d_node
         return sel_node
 
+    def clicked_link(self, p, extension=1.):
+        sel_link, dist = None, inf
+        for link in self.manager.histo_tree.links:
+            d_link = self.manager.dist_seg_point(link.n1.pos, link.n2.pos, p)
+            if dist > d_link <= extension * link.size:
+                sel_link, dist = link, d_link
+        return sel_link
+
 
 
 
@@ -229,8 +237,11 @@ class SelectionController(Controller):
             if node is not None:
                 self.manager.select(node)
                 self.manager.view_move(*node.pos)
-                self.enable()
-                self.manager.node_controller.enable()
+                return True
+            link = self.clicked_link(p, 2)
+            if link is not None:
+                self.manager.select(link)
+                self.manager.view_move(*link.middle)
                 return True
         return False
 
@@ -263,6 +274,37 @@ class NodeController(Controller):
                 self.move_node = False
             else:
                 self.manager.selected.set_pos(self.manager.un_view(self.manager.mouse_pos))
+            return True
+        return False
+
+    def root_selected(self):
+        self.manager.histo_tree.set_root(self.manager.selected)
+
+class LinkController(Controller):
+    name = "Link Controller"
+
+    def add_init(self) -> None:
+        self.move_link = False
+
+    def create_commands(self):
+        return (
+            {
+                #"_l_click":None,
+                "_MOUSE_MOTION": self.mouse_motion,
+
+                "r": self.root_selected,
+            },
+            {},
+            {}
+        )
+
+    def mouse_motion(self, *args):
+        if self.move_link or (self.manager.selected.dist(*self.manager.un_view(self.manager.mouse_pos)) < self.manager.selected.size and pygame.mouse.get_pressed()[0]):
+            self.move_link = True
+            if not pygame.mouse.get_pressed()[0]:
+                self.move_link = False
+            else:
+                self.manager.selected.move_pos(args[0] * self.manager.zoom, args[1] * self.manager.zoom)
             return True
         return False
 
@@ -334,12 +376,17 @@ class DebugController(Controller):
                 "_d_up_click": self.manager.debug_window_view_up,
                 "_d_down_click": self.manager.debug_window_view_down,
 
+                "c": self.clear_text,
+
                 pygame.K_DOWN: self.manager.debug_window_view_down,
                 pygame.K_UP: self.manager.debug_window_view_up,
             },
             {},
             {}
         )
+
+    def clear_text(self):
+        self.manager.debug_window.clear_text()
 
     def left_click(self, *args):
         return self.manager.debug_window.set_down()

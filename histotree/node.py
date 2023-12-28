@@ -1,6 +1,6 @@
 import pygame
 
-from math import sqrt
+from math import sqrt, atan2
 class Condition:
     pass
 
@@ -21,7 +21,7 @@ class Node:
         self.id: int = self._id
         Node._id += 1
 
-        self.pos = self.x, self.y = x, y
+        self.x, self.y = x, y
         self.size = 40
         self.color = 170, 130, 40
 
@@ -53,7 +53,7 @@ class Node:
         self.outs = []
 
     def __repr__(self):
-        return str(self.id)
+        return "Node n°" + str(self.id)
 
     def dist(self, x, y):
         return sqrt(pow(self.x - x, 2) + pow(self.y - y, 2))
@@ -62,9 +62,12 @@ class Node:
         self.x += rel_x
         self.y += rel_y
 
-    def set_pos(self, pos):
-        self.pos = self.x, self.y = pos
+    def set_pos(self, p):
+        self.x, self.y = p
 
+    @property
+    def pos(self):
+        return self.x, self.y
 
 
 class FightNode(Node):
@@ -81,14 +84,62 @@ class TalkNode(Node):
         self.color = 170, 30, 130
 
 
+class Link:
+    _id = 0
 
+    def __init__(self, n1, n2):
+        self.id: int = self._id
+        Link._id += 1
+
+        self.n1: Node = n1
+        self.n2: Node = n2
+        self.size = 8
+        self.color = 100, 120, 40
+
+        self.conditions: list = []
+
+        self.name: str = f"Link n°{self.id}"
+        self.add_init()
+
+    def add_init(self):
+        pass
+
+    def set_id(self, new_id):
+        self.id = new_id
+        self.name = f"Node {self.id}"
+
+    def __repr__(self):
+        return "Link n°" + str(self.id)
+
+    @property
+    def angle(self):
+        return atan2(self.n2.y - self.n1.y, self.n2.x - self.n1.x)
+
+    @property
+    def middle(self):
+        return (self.n1.x + self.n2.x) / 2, (self.n1.y + self.n2.y) / 2
+
+    @staticmethod
+    def dist_pts(p1, p2):
+        return pow(pow(p1[0] - p2[0], 2) + pow(p1[1] - p2[1], 2), 0.5)
+
+    def dist(self, x, y):
+        if (x - self.n1.x) * (self.n2.x - self.n1.x) + (y - self.n1.y) * (self.n2.y - self.n1.y) <= 0:
+            return self.dist_pts(self.n1.pos, (x, y))
+        if (x - self.n2.x) * (self.n1.x - self.n2.x) + (y - self.n2.y) * (self.n1.y - self.n2.y) <= 0:
+            return self.dist_pts(self.n2.pos, (x, y))
+        return abs((self.n2.x - self.n1.x) * (self.n1.y - y) - (self.n1.x - x) * (self.n2.y - self.n1.y)) / self.dist_pts(self.n1.pos, self.n2.pos)
+
+    def move_pos(self, x, y):
+        self.n1.move(x, y)
+        self.n2.move(x, y)
 
 class HistoTree:
     def __init__(self):
         self._root: Node | None = None
         self.graph: dict[Node, list[Node]] = {}
         self.nodes: set[Node] = set()
-        self.links: set[tuple[Node, Node]] = set()
+        self.links: set[Link] = set()
 
     def rooted(self) -> bool:
         try: return (self.root or True)
@@ -111,7 +162,7 @@ class HistoTree:
 
     def add_link(self, n1, n2):
         if (n1, n2) not in self.links:
-            self.links.add((n1, n2))
+            self.links.add(Link(n1, n2))
             self.graph[n1].append(n2)
             return True
         return False
@@ -123,8 +174,8 @@ class HistoTree:
         link_bin = set()
         for link in self.links:
             if node in link:
-                if node == link[1]:
-                    self.graph[link[0]].remove(node)
+                if node == link.n2:
+                    self.graph[link.n1].remove(node)
                 link_bin.add(link)
         self.links = self.links.symmetric_difference(link_bin)
         del self.graph[node]

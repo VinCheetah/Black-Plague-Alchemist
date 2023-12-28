@@ -224,24 +224,23 @@ class MenuWindow(Window):
 class MainWindow(Window):
 
     def additionnal_init(self):
-        self.link_color = (100, 120, 40)
-        self.node_color = (180, 130, 60)
         self.root_color = 230, 180, 80
 
     def update_content(self):
         self.content = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
-        for n1, n2 in self.manager.histo_tree.links:
-            pygame.draw.line(self.content, self.link_color, self.manager.view(n1.pos), self.manager.view(n2.pos), int(5 * self.manager.zoom))
-            angle = math.atan2(n2.y - n1.y, n2.x - n1.x)
-            end = n2.x - math.cos(angle) * (n2.size - 3), n2.y - math.sin(angle) * (n2.size - 3)
+        for link in self.manager.histo_tree.links:
+
+            pygame.draw.line(self.content, link.color if link != self.manager.selected else (255, 0, 0), self.manager.view(link.n1.pos), self.manager.view(link.n2.pos), int(5 * self.manager.zoom))
+            angle = link.angle
+            end = link.n2.x - math.cos(angle) * (link.n2.size - 3), link.n2.y - math.sin(angle) * (link.n2.size - 3)
 
             # Calculate the arrowhead points
-            size =  20
+            size = 20
             arrowhead1 = end[0] - size * math.cos(angle - math.pi / 6), end[1] - size * math.sin(angle - math.pi / 6)
             arrowhead2 = end[0] - size * math.cos(angle + math.pi / 6), end[1] - size * math.sin(angle + math.pi / 6)
 
             # Draw the arrowhead
-            pygame.draw.polygon(self.content, self.link_color, self.manager.list_view([end, arrowhead1, arrowhead2]))
+            pygame.draw.polygon(self.content, link.color if link != self.manager.selected else (255, 0, 0), self.manager.list_view([end, arrowhead1, arrowhead2]))
         for node in self.manager.histo_tree.nodes:
             pygame.draw.circle(self.content, node.color if node != self.manager.selected else (255, 0, 0), self.manager.view(node.pos), node.size * self.manager.zoom)
         if self.manager.histo_tree.rooted():
@@ -277,7 +276,8 @@ class ToolWindow(Window):
 
         self.link_to_button = MultiButton(self, self.width / 2, self.height_button * (0 + .5), "LINK", self.height_button, self.width, "link", "node_tool")
         self.birth_button = MultiButton(self, self.width / 2, self.height_button * (1 + .5), "DESCENDANT", self.height_button, self.width, "birth", "node_tool")
-        self.node_tools = {self.link_to_button, self.birth_button}
+        self.properties_tool = MultiButton(self, self.width / 2, self.height_button * (2 + .5), "PROPERTIES", self.height_button, self.width, "properties", "node_tool")
+        self.node_tools = {self.link_to_button, self.birth_button, self.properties_tool}
 
 
     def add_add_windows(self):
@@ -315,5 +315,8 @@ class DebugWindow(Window):
         if self.collide_mouse():
             self.down = True
             return True
+
+    def clear_text(self):
+        self.text = ""
 
 
