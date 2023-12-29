@@ -50,6 +50,12 @@ class Window:
     def collide_mouse(self):
         return 0 <= self.manager.mouse_x - self.x <= self.width and 0 <= self.manager.mouse_y - self.y <= self.height
 
+    def set_dim(self, new_height=None, new_width=None):
+        self.width = new_width or self.width
+        self.height = new_height or self.height
+        self.window = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
+
+
 
     def window_view_down(self):
         if self.moveable and self.collide_mouse():
@@ -279,6 +285,7 @@ class ToolWindow(Window):
         self.properties_tool = MultiButton(self, self.width / 2, self.height_button * (2 + .5), "PROPERTIES", self.height_button, self.width, "properties", "node_tool")
         self.node_tools = {self.link_to_button, self.birth_button, self.properties_tool}
 
+        self.link_tools = set()
 
     def add_add_windows(self):
         match self.mode:
@@ -286,6 +293,8 @@ class ToolWindow(Window):
                 button_list = self.main_tools
             case "node":
                 button_list = self.node_tools
+            case "link":
+                button_list = self.link_tools
             case _:
                 button_list = []
         for button in button_list:
@@ -294,6 +303,7 @@ class ToolWindow(Window):
 
     def add_retire_windows(self):
         self.erase_buttons()
+        self.manager.debug_window.retire_windows()
 
 
 class DebugWindow(Window):
@@ -318,5 +328,11 @@ class DebugWindow(Window):
 
     def clear_text(self):
         self.text = ""
+
+
+class PropertiesWindow(Window):
+
+    def update_content(self):
+        pass
 
 

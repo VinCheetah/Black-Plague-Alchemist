@@ -40,7 +40,11 @@ class HistoTreeManager:
 
         self.windows = []
 
+        self.tool_size = 300
+        self.debug_height = 500
+
         self.controllers = list()
+        self.properties_controller: controllerClass.PropertiesController = controllerClass.PropertiesController(self)
         self.debug_controller: controllerClass.DebugController = controllerClass.DebugController(self)
         self.tool_controller: controllerClass.ToolController = controllerClass.ToolController(self)
         self.node_controller: controllerClass.NodeController = controllerClass.NodeController(self)
@@ -50,10 +54,11 @@ class HistoTreeManager:
         self.menu_controller: controllerClass.MenuController = controllerClass.MenuController(self)
         self.main_controller: controllerClass.MainController = controllerClass.MainController(self)
 
-        self.tool_window: window.ToolWindow = window.ToolWindow(self, self.tool_controller, width=300, height=self.height)
+        self.properties_window: window.PropertiesWindow = window.PropertiesWindow(self, self.properties_controller, width=self.width, height=self.height)
+        self.tool_window: window.ToolWindow = window.ToolWindow(self, self.tool_controller, width=self.tool_size, height=self.height - self.debug_height)
         self.menu_window: window.MenuWindow = window.MenuWindow(self, self.menu_controller, width=self.width, height=self.height)
-        self.main_window: window.MainWindow = window.MainWindow(self, self.main_controller, width=self.width, height=self.height)
-        self.debug_window: window.DebugWindow = window.DebugWindow(self, self.debug_controller, width=290, height=490, x=5, y =self.height-495)
+        self.main_window: window.MainWindow = window.MainWindow(self, self.main_controller, width=self.width - self.tool_size, height=self.height, x=self.tool_size)
+        self.debug_window: window.DebugWindow = window.DebugWindow(self, self.debug_controller, width=self.tool_size-10, height=self.debug_height-10, x=5, y =self.height-self.debug_height-5)
 
         self.menu_window.set_window()
 
@@ -62,6 +67,7 @@ class HistoTreeManager:
         self.buildable = False
         self.moving_map = False
         self.move_map_anim = False
+        self.hidden_tools = False
 
         self.mouse_pos = self.mouse_x, self.mouse_y = 0, 0
 
@@ -193,29 +199,30 @@ class HistoTreeManager:
         self.selected = selected
         self.selection_controller.enable()
         if isinstance(selected, Node):
-            self.tool_window.retire_windows()
-            self.tool_window.mode = "node"
-            self.tool_window.add_windows()
+            self.update_tools("node")
             self.node_controller.enable()
         elif isinstance(selected, Link):
-            self.tool_window.retire_windows()
-            self.tool_window.mode = "link"
-            self.tool_window.add_windows()
+            self.update_tools("link")
             self.link_controller.enable()
+
+    def update_tools(self, mode):
+        if not self.hidden_tools:
+            self.tool_window.retire_windows()
+        self.tool_window.mode = mode
+        self.tool_window.add_windows()
+        if self.hidden_tools:
+            self.tool_window.retire_windows()
 
 
     def unselect(self):
         if self.selected is not None:
+            self.update_tools("main")
             if isinstance(self.selected, Node):
                 self.node_controller.disable()
             elif isinstance(self.selected, Link):
                 self.link_controller.disable()
             self.selection_controller.disable()
             self.selected = None
-            self.tool_window.retire_windows()
-            self.tool_window.mode = "main"
-            self.tool_window.add_windows()
-
     def delete_selected(self):
         if self.selected is not None:
             self.histo_tree.delete_node(self.selected)
@@ -274,10 +281,10 @@ class HistoTreeManager:
         return pow(pow(p1[0] - p2[0], 2) + pow(p1[1] - p2[1], 2), 0.5)
 
     def view_x(self, x):
-        return int((x - self.view_center_x) * self.zoom + self.width / 2)
+        return int((x - self.view_center_x) * self.zoom + self.main_window.width / 2)
 
     def view_y(self, y):
-        return int((y - self.view_center_y) * self.zoom + self.height / 2)
+        return int((y - self.view_center_y) * self.zoom + self.main_window.height / 2)
 
     def view(self, p):
         return self.view_x(p[0]), self.view_y(p[1])
@@ -286,10 +293,10 @@ class HistoTreeManager:
         return [self.view(p) for p in iterable]
 
     def un_view_x(self, x):
-        return (x - self.width / 2) / self.zoom + self.view_center_x
+        return (x - self.main_window.width / 2 - self.main_window.x) / self.zoom + self.view_center_x
 
     def un_view_y(self, y):
-        return (y - self.height / 2) / self.zoom + self.view_center_y
+        return (y - self.main_window.height / 2 - self.main_window.y) / self.zoom + self.view_center_y
 
     def un_view(self, p):
         return self.un_view_x(p[0]), self.un_view_y(p[1])

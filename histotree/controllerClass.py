@@ -122,7 +122,9 @@ class MainController(Controller):
 
                 "m": self.manager.start_menu,
                 "s": self.manager.favorite_save,
-                "p": self.manager.print_histo_tree
+                "p": self.manager.print_histo_tree,
+                "f": self.flip_tool,
+                "t": self.hide_tool
             },
             {
                 "QUIT": self.manager.stop_running,
@@ -131,9 +133,24 @@ class MainController(Controller):
             {},
         )
 
+    def flip_tool(self):
+        if not self.manager.hidden_tools:
+            self.manager.main_window.x = self.manager.tool_size - self.manager.main_window.x
+            self.manager.tool_window.x = (self.manager.width - self.manager.tool_size) - self.manager.tool_window.x
+            self.manager.debug_window.x = (self.manager.width - self.manager.tool_size + 10) - self.manager.debug_window.x
 
-        
-        
+    def hide_tool(self):
+        if not self.manager.hidden_tools:
+            self.manager.main_window.x = 0
+            self.manager.main_window.set_dim(new_width=self.manager.width)
+            self.manager.tool_window.retire_windows()
+        else:
+            self.manager.main_window.set_dim(new_width=self.manager.width - self.manager.tool_size)
+            self.manager.main_window.x = (self.manager.tool_window.x == 0) * self.manager.tool_size
+            self.manager.tool_window.add_windows()
+        self.manager.hidden_tools = not self.manager.hidden_tools
+
+
 class MapController(Controller):
 
     name = "Map Controller"
@@ -142,8 +159,8 @@ class MapController(Controller):
     def create_commands(self):
         return (
             {
-                "_d_up_click": self.manager.zoom_move,
-                "_d_down_click": self.manager.unzoom_move,
+                "_d_up_click": self.zoom,
+                "_d_down_click": self.un_zoom,
                 "_l_click": self.left_click,
                 "_r_click": self.right_click,
 
@@ -155,7 +172,19 @@ class MapController(Controller):
             {}
         )
 
+    def un_zoom(self, *args):
+        if not self.manager.main_window.collide_mouse():
+            return False
+        self.manager.unzoom_move()
+
+    def zoom(self, *args):
+        if not self.manager.main_window.collide_mouse():
+            return False
+        self.manager.zoom_move()
+
     def left_click(self, *args):
+        if not self.manager.main_window.collide_mouse():
+            return False
         if self.check_buttons(*args):
             return True
         if not self.manager.moving_map:
@@ -169,11 +198,13 @@ class MapController(Controller):
         return True
 
     def right_click(self, *args):
+        if not self.manager.main_window.collide_mouse():
+            return False
         if self.check_buttons(*args):
             return True
         if not self.manager.moving_map:
             if self.manager.selected is None:
-                print("right")
+                self.manager.add_debug("right")
             else:
                 self.manager.unselect()
         else:
@@ -200,7 +231,6 @@ class MenuController(Controller):
         )
 
     def enter(self):
-        print("Yoow")
         self.manager.menu_window.start_button.action()
 
     def left_click(self, *args):
@@ -367,6 +397,39 @@ class ToolController(Controller):
 class DebugController(Controller):
     name = "Debug Controller"
     controller_debug = False
+
+    def create_commands(self):
+        return (
+            {
+                "_l_click": self.left_click,
+
+                "_d_up_click": self.manager.debug_window_view_up,
+                "_d_down_click": self.manager.debug_window_view_down,
+
+                "c": self.clear_text,
+
+                pygame.K_DOWN: self.manager.debug_window_view_down,
+                pygame.K_UP: self.manager.debug_window_view_up,
+            },
+            {},
+            {}
+        )
+
+    def clear_text(self):
+        self.manager.debug_window.clear_text()
+
+    def left_click(self, *args):
+        return self.manager.debug_window.set_down()
+
+
+class PropertiesController(Controller):
+    name = "Properties Controller"
+    controller_debug = False
+
+    def new_init(self, object):
+        self.object = object
+        self.enable()
+
 
     def create_commands(self):
         return (

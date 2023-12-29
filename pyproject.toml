@@ -9,7 +9,6 @@ readme = "README.md"
 python = "^3.10"
 toml = "^0.10.2"
 pygame = "^2.5.2"
-poetry = "^1.7.1"
 
 
 [build-system]
