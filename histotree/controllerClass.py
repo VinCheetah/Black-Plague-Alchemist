@@ -81,7 +81,7 @@ class Controller:
         pass
 
     def check_buttons(self, *args):
-        for button in self.buttons:
+        for button in self.buttons.copy():
             if button.is_clicked(*args):
                 return True
         return False
@@ -118,13 +118,15 @@ class MainController(Controller):
     def create_commands(self):
         return (
             {
-                pygame.K_ESCAPE: self.manager.stop_running,
+                pygame.K_ESCAPE: self.manager.start_menu,
 
                 "m": self.manager.start_menu,
                 "s": self.manager.favorite_save,
                 "p": self.manager.print_histo_tree,
                 "f": self.flip_tool,
-                "t": self.hide_tool
+                "t": self.hide_tool,
+
+                "q": self.show_controllers
             },
             {
                 "QUIT": self.manager.stop_running,
@@ -132,6 +134,9 @@ class MainController(Controller):
             },
             {},
         )
+
+    def show_controllers(self):
+        self.manager.add_debug("\n".join(controller.name for controller in self.manager.controllers if controller.active))
 
     def flip_tool(self):
         if not self.manager.hidden_tools:
@@ -187,9 +192,20 @@ class MapController(Controller):
             return False
         if self.check_buttons(*args):
             return True
+        p = self.manager.un_view(args)
         if not self.manager.moving_map:
+            node = self.clicked_node(p, 1.5)
+            if node is not None:
+                self.manager.select(node)
+                self.manager.view_move(*node.pos)
+                return True
+            link = self.clicked_link(p, 2)
+            if link is not None:
+                self.manager.select(link)
+                self.manager.view_move(*link.middle)
+                return True
             if self.manager.selected is None:
-                self.manager.histo_tree.add_node(*self.manager.un_view(args))
+                self.manager.histo_tree.add_node(*p)
             else:
                 self.manager.unselect()
         else:
@@ -223,15 +239,23 @@ class MenuController(Controller):
                 "_l_click": self.left_click,
                 "_MOUSE_MOTION": self.mouse_motion,
 
+                "q": self.show_controllers,
+
                 pygame.K_RETURN: self.enter,
+                pygame.K_ESCAPE: self.manager.stop_running,
             },
             {},
             {
             }
         )
 
+
+    def show_controllers(self):
+        self.manager.add_debug("\n".join(controller.name for controller in self.manager.controllers if controller.active))
+        print("\n".join(controller.name for controller in self.manager.controllers if controller.active))
+
     def enter(self):
-        self.manager.menu_window.start_button.action()
+        return self.manager.menu_window.start_button.action()
 
     def left_click(self, *args):
         return self.check_buttons(*args)
@@ -254,26 +278,10 @@ class SelectionController(Controller):
                 pygame.K_BACKSPACE: self.manager.delete_selected,
                 "i": self.print_infos
             },
-            {
-                "_l_click": self.find_selected
-            },
+            {},
             {}
         )
 
-    def find_selected(self, x, y):
-        p = self.manager.un_view((x, y))
-        if not self.manager.moving_map:
-            node = self.clicked_node(p, 1.5)
-            if node is not None:
-                self.manager.select(node)
-                self.manager.view_move(*node.pos)
-                return True
-            link = self.clicked_link(p, 2)
-            if link is not None:
-                self.manager.select(link)
-                self.manager.view_move(*link.middle)
-                return True
-        return False
 
     def print_infos(self):
         self.manager.add_debug(self.manager.selected)
@@ -334,7 +342,7 @@ class LinkController(Controller):
             if not pygame.mouse.get_pressed()[0]:
                 self.move_link = False
             else:
-                self.manager.selected.move_pos(args[0] * self.manager.zoom, args[1] * self.manager.zoom)
+                self.manager.selected.move_pos(args[0] / self.manager.zoom, args[1] / self.manager.zoom)
             return True
         return False
 
@@ -373,11 +381,16 @@ class ToolController(Controller):
                 if node is None:
                     self.manager.histo_tree.add_link(self.manager.selected, self.manager.histo_tree.add_node(*p))
                     return True
+
         if button.MultiButton.info["main_tool"] is not None:
             if button.MultiButton.info["main_tool"][0] == "delete":
                 node = self.clicked_node(p, 1.5)
                 if node is not None:
                     self.manager.histo_tree.delete_node(node)
+                    return True
+                link = self.clicked_link(p, 1.5)
+                if link is not None:
+                    self.manager.histo_tree.delete_link(link)
                     return True
             if button.MultiButton.info["main_tool"][0] == "link":
                 node = self.clicked_node(p, 1.5)
@@ -426,8 +439,8 @@ class PropertiesController(Controller):
     name = "Properties Controller"
     controller_debug = False
 
-    def new_init(self, object):
-        self.object = object
+    def new_init(self, obj):
+        self.object = obj
         self.enable()
 
 
@@ -436,20 +449,20 @@ class PropertiesController(Controller):
             {
                 "_l_click": self.left_click,
 
-                "_d_up_click": self.manager.debug_window_view_up,
-                "_d_down_click": self.manager.debug_window_view_down,
+                "_MOUSE_MOTION": self.mouse_motion,
 
-                "c": self.clear_text,
+                #"_d_up_click": self.manager.debug_window_view_up,
+                #"_d_down_click": self.manager.debug_window_view_down,
 
-                pygame.K_DOWN: self.manager.debug_window_view_down,
-                pygame.K_UP: self.manager.debug_window_view_up,
+                #pygame.K_DOWN: self.manager.debug_window_view_down,
+                #pygame.K_UP: self.manager.debug_window_view_up,
             },
             {},
             {}
         )
 
-    def clear_text(self):
-        self.manager.debug_window.clear_text()
-
     def left_click(self, *args):
-        return self.manager.debug_window.set_down()
+        return self.check_buttons(*args)
+
+    def mouse_motion(self, *args):
+        return self.check_under_mouse()

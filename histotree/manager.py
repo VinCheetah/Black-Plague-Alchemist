@@ -7,7 +7,7 @@ import button
 import pickle
 import os
 from boundedValue import BoundedValue
-from node import Node, Link, HistoTree
+from structure import Node, Link, HistoTree, PlaceNode
 import controllerClass
 import window
 
@@ -43,6 +43,8 @@ class HistoTreeManager:
         self.tool_size = 300
         self.debug_height = 500
 
+        self.clock = pygame.time.Clock()
+
         self.controllers = list()
         self.properties_controller: controllerClass.PropertiesController = controllerClass.PropertiesController(self)
         self.debug_controller: controllerClass.DebugController = controllerClass.DebugController(self)
@@ -54,7 +56,7 @@ class HistoTreeManager:
         self.menu_controller: controllerClass.MenuController = controllerClass.MenuController(self)
         self.main_controller: controllerClass.MainController = controllerClass.MainController(self)
 
-        self.properties_window: window.PropertiesWindow = window.PropertiesWindow(self, self.properties_controller, width=self.width, height=self.height)
+        self.properties_window: window.PropertiesWindow = window.PropertiesWindow(self, self.properties_controller, width=self.width - self.tool_size, height=self.height, x=self.tool_size)
         self.tool_window: window.ToolWindow = window.ToolWindow(self, self.tool_controller, width=self.tool_size, height=self.height - self.debug_height)
         self.menu_window: window.MenuWindow = window.MenuWindow(self, self.menu_controller, width=self.width, height=self.height)
         self.main_window: window.MainWindow = window.MainWindow(self, self.main_controller, width=self.width - self.tool_size, height=self.height, x=self.tool_size)
@@ -85,11 +87,15 @@ class HistoTreeManager:
         file.touch(exist_ok=True)
         with open(file, "rb") as f:
             self.histo_tree = pickle.load(f)
+            self.update_tree()
 
     def favorite_save(self):
         self.save(self.favorite_file)
 
     def start_menu(self):
+        self.save_auto_save()
+        self.histo_tree = HistoTree()
+        self.selected = None
         self.menu_window.set_window()
 
     def start_main(self):
@@ -100,10 +106,32 @@ class HistoTreeManager:
                 case "crash":
                     self.load_crash()
                 case "select":
+                    files = list((Path.cwd() / "histotree/trees").glob('*'))
+                    print(Path.cwd())
+                    for i, file in enumerate(files):
+                        print(f" {i+1}: {file.name}")
+                    inp = input("--> ")
+                    while not inp.isnumeric() and 1 <= int(inp) <= len(files):
+                        inp = input("--> ")
+                    self.load(files[int(inp)-1].resolve())
+                case "favorite":
                     self.load(self.favorite_file)
 
         self.main_window.set_window()
+        self.add_debug("Should start")
         self.add_debug("Petite console de debug... essai \"p\"\n")
+
+    def update_tree(self):
+        new_histo_tree = HistoTree()
+        update_dict = {}
+        for node in self.histo_tree.nodes:
+            update_dict[node] = new_histo_tree.add_node(*node.pos)
+        for link in self.histo_tree.links:
+            new_histo_tree.add_link(update_dict[link.n1], update_dict[link.n2])
+        if self.histo_tree.rooted():
+            new_histo_tree.set_root(update_dict[self.histo_tree.root])
+        self.histo_tree = new_histo_tree
+
 
 
     def save(self, file_name) -> None:
@@ -185,6 +213,7 @@ class HistoTreeManager:
             self.display()
             self.interactions()
             pygame.display.flip()
+            self.clock.tick(60)
 
     def screen_resize(self):
         self.width, self.height = self.screen.get_size()
@@ -197,13 +226,13 @@ class HistoTreeManager:
             self.unselect()
 
         self.selected = selected
-        self.selection_controller.enable()
         if isinstance(selected, Node):
             self.update_tools("node")
             self.node_controller.enable()
         elif isinstance(selected, Link):
             self.update_tools("link")
             self.link_controller.enable()
+        self.selection_controller.enable()
 
     def update_tools(self, mode):
         if not self.hidden_tools:
@@ -225,7 +254,10 @@ class HistoTreeManager:
             self.selected = None
     def delete_selected(self):
         if self.selected is not None:
-            self.histo_tree.delete_node(self.selected)
+            if isinstance(self.selected, Node):
+                self.histo_tree.delete_node(self.selected)
+            elif isinstance(self.selected, Link):
+                self.histo_tree.delete_link(self.selected)
             self.unselect()
 
     def selected_is_node(self):
@@ -243,6 +275,15 @@ class HistoTreeManager:
     def add_view_coord(self, x, y):
         self.view_center_x += x
         self.view_center_y += y
+
+    def recognize_node(self, obj=None):
+        return isinstance(obj or self.selected, Node)
+
+    def recognize_link(self, obj=None):
+        return isinstance(obj or self.selected, Link)
+
+    def recognize_place(self, obj=None):
+        return isinstance(obj or self.selected, PlaceNode)
 
     def move_map(self, rel_x, rel_y):
         if pygame.mouse.get_pressed()[0]:

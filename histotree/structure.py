@@ -82,7 +82,18 @@ class TalkNode(Node):
     def add_init(self):
         self.size = 30
         self.color = 170, 30, 130
+        self.properties = {"speaker", "messages"}
+        self.speaker: str = ""
+        self.messages: list[str] = []
 
+
+class PlaceNode(Node):
+
+    def add_init(self):
+        self.color = 30, 170, 140
+        self.properties = {"place", "subplace"}
+        self.place: str = ""
+        self.subplace: str = ""
 
 class Link:
     _id = 0
@@ -94,7 +105,8 @@ class Link:
         self.n1: Node = n1
         self.n2: Node = n2
         self.size = 8
-        self.color = 100, 120, 40
+        self.nodes = self.n1, self.n2
+        self.color = 100, 120, 170
 
         self.conditions: list = []
 
@@ -169,16 +181,20 @@ class HistoTree:
 
     def delete_node(self, node):
         self.nodes.discard(node)
-        if node == self.root:
+        if self.rooted() and node == self.root:
             self._root = None
         link_bin = set()
         for link in self.links:
-            if node in link:
+            if node in link.nodes:
                 if node == link.n2:
                     self.graph[link.n1].remove(node)
                 link_bin.add(link)
         self.links = self.links.symmetric_difference(link_bin)
         del self.graph[node]
+
+    def delete_link(self, link):
+        self.links.discard(link)
+        self.graph[link.n1].remove(link.n2)
 
     def __repr__(self):
         return f"Nodes : {self.nodes}\nLinks : {self.links}"

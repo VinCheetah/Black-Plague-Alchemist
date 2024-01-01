@@ -1,7 +1,7 @@
 import pygame
 import color
 import boundedValue
-from button import SoloButton, MultiButton
+from button import Button, OptionButton, MultiButton
 import math
 
 
@@ -54,8 +54,6 @@ class Window:
         self.width = new_width or self.width
         self.height = new_height or self.height
         self.window = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
-
-
 
     def window_view_down(self):
         if self.moveable and self.collide_mouse():
@@ -173,6 +171,10 @@ class Window:
         self.buttons.add(button)
         self.controller.buttons.add(button)
 
+    def erase_button(self, button):
+        self.buttons.discard(button)
+        self.controller.buttons.discard(button)
+
     def erase_buttons(self):
         for button in self.buttons:
             MultiButton.info[button.key] = None
@@ -188,20 +190,23 @@ class Window:
             return True
         return False
 
-    def retire_windows(self):
-        self.manager.windows.remove(self)
+    def retire_windows(self, *args):
+        if self in self.manager.windows:
+            self.manager.windows.remove(self)
+        else:
+            self.manager.add_debug(f"{type(self)} is already not in windows")
         self.controller.disable()
-        self.add_retire_windows()
+        self.add_retire_windows(*args)
 
-    def add_retire_windows(self):
+    def add_retire_windows(self, *args):
         pass
 
-    def add_windows(self):
+    def add_windows(self, *args):
         self.manager.windows.append(self)
         self.controller.enable()
-        self.add_add_windows()
+        self.add_add_windows(*args)
 
-    def add_add_windows(self):
+    def add_add_windows(self, *args):
         pass
 
     def set_window(self):
@@ -213,15 +218,17 @@ class Window:
 
 class MenuWindow(Window):
     def additionnal_init(self):
-        self.start_button = SoloButton(self, "center", "down", "START", value=True, func_action=self.manager.start_main)
+        self.start_button = Button(self, "center", 3 * self.height / 4 , "START", value=True, func_action=self.manager.start_main)
         self.new_button(self.start_button)
 
-        self.auto_save_button = MultiButton(self, self.width / 4, "center", "AUTO SAVE", value="auto", key="import_histotree")
-        self.crash_save_button = MultiButton(self, self.width / 2, "center", "CRASH SAVE", value="crash", key="import_histotree")
-        self.select_save_button = MultiButton(self, 3 * self.width / 4, "center", "SELECT SAVE", value="select", key="import_histotree", clicked=True)
+        self.auto_save_button = Button(self, self.width / 5, "center", "AUTO SAVE", value="auto", key="import_histotree")
+        self.crash_save_button = Button(self, 2 * self.width / 5, "center", "CRASH SAVE", value="crash", key="import_histotree")
+        self.select_save_button = Button(self, 3 * self.width / 5, "center", "SELECT SAVE", value="select", key="import_histotree")
+        self.favorite_save_button = Button(self, 4 * self.width / 5, "center", "FAVORITE SAVE", value="favorite", key="import_histotree", clicked=True)
         self.new_button(self.auto_save_button)
         self.new_button(self.crash_save_button)
         self.new_button(self.select_save_button)
+        self.new_button(self.favorite_save_button)
 
     def add_add_windows(self):
         self.start_button.reset()
@@ -231,6 +238,7 @@ class MainWindow(Window):
 
     def additionnal_init(self):
         self.root_color = 230, 180, 80
+        self.background_color = 10, 20, 15
 
     def update_content(self):
         self.content = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
@@ -276,14 +284,15 @@ class ToolWindow(Window):
         self.mode = ""
         self.background_color = (100, 100, 100)
 
-        self.link_button = MultiButton(self, self.width / 2, self.height_button * (0 + .5), "LINK", self.height_button, self.width, "link", "main_tool")
-        self.delete_button = MultiButton(self, self.width / 2, self.height_button * (1 + .5), "DELETE", self.height_button, self.width, "delete", "main_tool")
+        self.link_button = Button(self, self.width / 2, self.height_button * (0 + .5), "LINK", self.height_button, self.width, "link", key="main_tool")
+        self.delete_button = Button(self, self.width / 2, self.height_button * (1 + .5), "DELETE", self.height_button, self.width, "delete", key="main_tool")
         self.main_tools = {self.link_button, self.delete_button}
 
-        self.link_to_button = MultiButton(self, self.width / 2, self.height_button * (0 + .5), "LINK", self.height_button, self.width, "link", "node_tool")
-        self.birth_button = MultiButton(self, self.width / 2, self.height_button * (1 + .5), "DESCENDANT", self.height_button, self.width, "birth", "node_tool")
-        self.properties_tool = MultiButton(self, self.width / 2, self.height_button * (2 + .5), "PROPERTIES", self.height_button, self.width, "properties", "node_tool")
-        self.node_tools = {self.link_to_button, self.birth_button, self.properties_tool}
+        self.link_to_button = Button(self, self.width / 2, self.height_button * (0 + .5), "LINK", self.height_button, self.width, "link", key="node_tool")
+        self.birth_button = Button(self, self.width / 2, self.height_button * (1 + .5), "DESCENDANT", self.height_button, self.width, "birth", key="node_tool")
+        self.type_button = OptionButton(self, self.width / 2, self.height_button * (3 + .5), "TYPE", self.height_button, self.width, "type", ["Place", "Talk", "Fight"], option_height=30, key="node_tool")
+        self.properties_tool = Button(self, self.width / 2, self.height_button * (2 + .5), "PROPERTIES", self.height_button, self.width, "properties", key="node_tool", func_action=self.manager.properties_window.add_windows, func_inaction=self.manager.properties_window.retire_windows)
+        self.node_tools = {self.link_to_button, self.birth_button, self.properties_tool, self.type_button}
 
         self.link_tools = set()
 
@@ -303,6 +312,9 @@ class ToolWindow(Window):
 
     def add_retire_windows(self):
         self.erase_buttons()
+        self.manager.selection_controller.disable()
+        self.manager.node_controller.disable()
+        self.manager.link_controller.disable()
         self.manager.debug_window.retire_windows()
 
 
@@ -332,7 +344,31 @@ class DebugWindow(Window):
 
 class PropertiesWindow(Window):
 
-    def update_content(self):
-        pass
+    def additionnal_init(self):
+        self.current_buttons = set()
+
+        self.place_button = OptionButton(self, 400, 400, "Select a Place", 50, options=["Maison", "Chateau", "Temple"])
+        self.place_buttons = {self.place_button}
+
+        self.apply_button = Button(self, "center", "down", "APPLY", func_action=self.apply_func)
+        self.new_button(self.apply_button)
+
+    def apply_func(self):
+        self.apply_button.reset()
+        self.manager.add_debug("Changes Applied")
+        # Apply changes
+
+
+    def add_add_windows(self):
+        self.manager.map_controller.disable()
+        if self.manager.recognize_place():
+            self.current_buttons = self.current_buttons.union(self.place_buttons)
+
+    def add_retire_windows(self):
+        self.manager.map_controller.enable()
+        for button in self.current_buttons:
+            self.erase_button(button)
+        self.current_buttons.clear()
+
 
 
