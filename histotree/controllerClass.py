@@ -87,6 +87,8 @@ class Controller:
         return False
 
     def check_under_mouse(self, *args):
+        return False
+
         for button in self.buttons:
             button.under_mouse()
 

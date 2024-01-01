@@ -1,7 +1,7 @@
 import pygame
 import color
 import boundedValue
-from button import Button, OptionButton, MultiButton
+from button import Button, OptionButton, MultiButton, MultiOptionButton
 import math
 
 
@@ -178,7 +178,6 @@ class Window:
     def erase_buttons(self):
         for button in self.buttons:
             MultiButton.info[button.key] = None
-            button.color = button.unclicked_color
             button.clicked = False
         self.buttons.clear()
         self.controller.buttons.clear()
@@ -221,10 +220,10 @@ class MenuWindow(Window):
         self.start_button = Button(self, "center", 3 * self.height / 4 , "START", value=True, func_action=self.manager.start_main)
         self.new_button(self.start_button)
 
-        self.auto_save_button = Button(self, self.width / 5, "center", "AUTO SAVE", value="auto", key="import_histotree")
-        self.crash_save_button = Button(self, 2 * self.width / 5, "center", "CRASH SAVE", value="crash", key="import_histotree")
-        self.select_save_button = Button(self, 3 * self.width / 5, "center", "SELECT SAVE", value="select", key="import_histotree")
-        self.favorite_save_button = Button(self, 4 * self.width / 5, "center", "FAVORITE SAVE", value="favorite", key="import_histotree", clicked=True)
+        self.auto_save_button = MultiButton(self, self.width / 5, "center", "AUTO SAVE", value="auto", key="import_histotree")
+        self.crash_save_button = MultiButton(self, 2 * self.width / 5, "center", "CRASH SAVE", value="crash", key="import_histotree")
+        self.select_save_button = MultiOptionButton(self, 3 * self.width / 5, "center", "SELECT SAVE", value="select", key="import_histotree", option_height=40, options=[file.name for file in self.manager.get_tree_files()], option_size=20)
+        self.favorite_save_button = MultiButton(self, 4 * self.width / 5, "center", "FAVORITE SAVE", value="favorite", key="import_histotree", clicked=True)
         self.new_button(self.auto_save_button)
         self.new_button(self.crash_save_button)
         self.new_button(self.select_save_button)
@@ -284,14 +283,14 @@ class ToolWindow(Window):
         self.mode = ""
         self.background_color = (100, 100, 100)
 
-        self.link_button = Button(self, self.width / 2, self.height_button * (0 + .5), "LINK", self.height_button, self.width, "link", key="main_tool")
-        self.delete_button = Button(self, self.width / 2, self.height_button * (1 + .5), "DELETE", self.height_button, self.width, "delete", key="main_tool")
+        self.link_button = MultiButton(self, self.width / 2, self.height_button * (0 + .5), "LINK", self.height_button, self.width, "link", key="main_tool")
+        self.delete_button = MultiButton(self, self.width / 2, self.height_button * (1 + .5), "DELETE", self.height_button, self.width, "delete", key="main_tool")
         self.main_tools = {self.link_button, self.delete_button}
 
-        self.link_to_button = Button(self, self.width / 2, self.height_button * (0 + .5), "LINK", self.height_button, self.width, "link", key="node_tool")
-        self.birth_button = Button(self, self.width / 2, self.height_button * (1 + .5), "DESCENDANT", self.height_button, self.width, "birth", key="node_tool")
-        self.type_button = OptionButton(self, self.width / 2, self.height_button * (3 + .5), "TYPE", self.height_button, self.width, "type", ["Place", "Talk", "Fight"], option_height=30, key="node_tool")
-        self.properties_tool = Button(self, self.width / 2, self.height_button * (2 + .5), "PROPERTIES", self.height_button, self.width, "properties", key="node_tool", func_action=self.manager.properties_window.add_windows, func_inaction=self.manager.properties_window.retire_windows)
+        self.link_to_button = MultiButton(self, self.width / 2, self.height_button * (0 + .5), "LINK", self.height_button, self.width, "link", key="node_tool")
+        self.birth_button = MultiButton(self, self.width / 2, self.height_button * (1 + .5), "DESCENDANT", self.height_button, self.width, "birth", key="node_tool")
+        self.type_button = MultiOptionButton(self, self.width / 2, self.height_button * (3 + .5), "TYPE", self.height_button, self.width, "type", ["Place", "Talk", "Fight"], option_height=30, key="node_tool")
+        self.properties_tool = MultiButton(self, self.width / 2, self.height_button * (2 + .5), "PROPERTIES", self.height_button, self.width, "properties", key="node_tool", func_action=self.manager.properties_window.add_windows, func_inaction=self.manager.properties_window.retire_windows)
         self.node_tools = {self.link_to_button, self.birth_button, self.properties_tool, self.type_button}
 
         self.link_tools = set()

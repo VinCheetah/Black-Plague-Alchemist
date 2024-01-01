@@ -98,6 +98,9 @@ class HistoTreeManager:
         self.selected = None
         self.menu_window.set_window()
 
+    def get_tree_files(self):
+        return list((Path.cwd() / "histotree/trees").glob('*'))
+
     def start_main(self):
         if button.MultiButton.info["import_histotree"] is not None:
             match (button.MultiButton.info["import_histotree"][0]):
@@ -106,14 +109,10 @@ class HistoTreeManager:
                 case "crash":
                     self.load_crash()
                 case "select":
-                    files = list((Path.cwd() / "histotree/trees").glob('*'))
-                    print(Path.cwd())
-                    for i, file in enumerate(files):
-                        print(f" {i+1}: {file.name}")
-                    inp = input("--> ")
-                    while not inp.isnumeric() and 1 <= int(inp) <= len(files):
-                        inp = input("--> ")
-                    self.load(files[int(inp)-1].resolve())
+                    files = self.get_tree_files()
+                    for file in files:
+                        if file.name == button.MultiButton.info[button.MultiButton.info["import_histotree"][1].options[0].key][0]:
+                            self.load(file.resolve())
                 case "favorite":
                     self.load(self.favorite_file)
 
