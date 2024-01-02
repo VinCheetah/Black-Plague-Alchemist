@@ -81,6 +81,7 @@ class Window:
         pygame.draw.rect(self.window, color.BLACK, [0, 0, self.width, self.height], 1)
 
         self.update_content()
+        self.update_extremum_view()
         self.print_content()
 
         self.manager.screen.blit(self.window, (self.x, self.y))
@@ -112,7 +113,7 @@ class Window:
 
     def update_extremum_view(self):
         self.view_x.set_max(0)
-        self.view_y.set_max(max(0, self.content_height - self.content.get_size()[1]))
+        self.view_y.set_max(max(0, self.content_height - self.height))
 
     def format_text(self, text, font, x_space=5, y_space=5):
         text_surface = pygame.Surface((self.width, self.height))
@@ -289,7 +290,7 @@ class ToolWindow(Window):
 
         self.link_to_button = MultiButton(self, self.width / 2, self.height_button * (0 + .5), "LINK", self.height_button, self.width, "link", key="node_tool")
         self.birth_button = MultiButton(self, self.width / 2, self.height_button * (1 + .5), "DESCENDANT", self.height_button, self.width, "birth", key="node_tool")
-        self.type_button = MultiOptionButton(self, self.width / 2, self.height_button * (3 + .5), "TYPE", self.height_button, self.width, "type", ["Place", "Talk", "Fight"], option_height=30, key="node_tool")
+        self.type_button = MultiOptionButton(self, self.width / 2, self.height_button * (3 + .5), "TYPE", self.height_button, self.width, "type", ["None", "Place", "Talk", "Fight", "Choice"], option_height=30, key="node_tool", option_fun_action=self.manager.change_node_type_selected)
         self.properties_tool = MultiButton(self, self.width / 2, self.height_button * (2 + .5), "PROPERTIES", self.height_button, self.width, "properties", key="node_tool", func_action=self.manager.properties_window.add_windows, func_inaction=self.manager.properties_window.retire_windows)
         self.node_tools = {self.link_to_button, self.birth_button, self.properties_tool, self.type_button}
 
@@ -346,7 +347,7 @@ class PropertiesWindow(Window):
     def additionnal_init(self):
         self.current_buttons = set()
 
-        self.place_button = OptionButton(self, 400, 400, "Select a Place", 50, options=["Maison", "Chateau", "Temple"])
+        self.place_button = OptionButton(self, 400, 400, "Select a Place", 50, options=["Maison", "Chateau", "Temple"], init_clicked=(lambda x: x.value == self.manager.selected.place), option_fun_action=(lambda: setattr(self.manager.selected, "place", MultiButton.info[self.place_button][0])))
         self.place_buttons = {self.place_button}
 
         self.apply_button = Button(self, "center", "down", "APPLY", func_action=self.apply_func)
@@ -357,11 +358,13 @@ class PropertiesWindow(Window):
         self.manager.add_debug("Changes Applied")
         # Apply changes
 
-
     def add_add_windows(self):
         self.manager.map_controller.disable()
         if self.manager.recognize_place():
             self.current_buttons = self.current_buttons.union(self.place_buttons)
+
+        for button in self.current_buttons:
+            self.new_button(button)
 
     def add_retire_windows(self):
         self.manager.map_controller.enable()

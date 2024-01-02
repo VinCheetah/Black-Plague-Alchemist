@@ -364,6 +364,12 @@ class ToolController(Controller):
             {
                 "_l_click": self.left_click,
                 "_MOUSE_MOTION": self.mouse_motion,
+
+                "_d_up_click": self.manager.tool_window_view_up,
+                "_d_down_click": self.manager.tool_window_view_down,
+
+                pygame.K_DOWN: self.manager.tool_window_view_down,
+                pygame.K_UP: self.manager.tool_window_view_up,
             },
             {},
             {}

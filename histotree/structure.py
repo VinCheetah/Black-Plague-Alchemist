@@ -20,6 +20,7 @@ class Node:
     def __init__(self, x, y):
         self.id: int = self._id
         Node._id += 1
+        self.properties = set()
 
         self.x, self.y = x, y
         self.size = 40
@@ -69,6 +70,10 @@ class Node:
     def pos(self):
         return self.x, self.y
 
+    def add_property(self, prop, value):
+        self.properties.add(prop)
+        setattr(self, prop, value)
+
 
 class FightNode(Node):
 
@@ -82,18 +87,16 @@ class TalkNode(Node):
     def add_init(self):
         self.size = 30
         self.color = 170, 30, 130
-        self.properties = {"speaker", "messages"}
-        self.speaker: str = ""
-        self.messages: list[str] = []
+        self.add_property("speaker", "")
+        self.add_property("messages", [])
 
 
 class PlaceNode(Node):
 
     def add_init(self):
         self.color = 30, 170, 140
-        self.properties = {"place", "subplace"}
-        self.place: str = ""
-        self.subplace: str = ""
+        self.add_property("place", "")
+        self.add_property("subplace", "")
 
 class Link:
     _id = 0
@@ -166,11 +169,36 @@ class HistoTree:
     def set_root(self, new_root: Node):
         self._root = new_root
 
-    def add_node(self, x, y):
-        node = Node(x, y)
+    def add_node(self, x, y, t=None):
+        node = (t or Node)(x, y)
         self.nodes.add(node)
         self.graph[node] = []
         return node
+
+    def replace_node(self, new_node, old_node):
+        self.nodes.discard(old_node)
+        self.nodes.add(new_node)
+        self.graph[new_node] = self.graph[old_node][:]
+        del self.graph[old_node]
+        for adj in self.graph.values():
+            if old_node in adj:
+                adj.remove(old_node)
+                adj.append(new_node)
+        link_bin = {link for link in self.links if old_node in link.nodes}
+        for link in link_bin:
+            if link.n1 == old_node:
+                self.links.add(Link(new_node, link.n2))
+            else:
+                self.links.add(Link(link.n1, new_node))
+        self.links = self.links.difference(link_bin)
+
+    def change_type_node(self, node, new_type):
+        new_node = (new_type or Node)(*node.pos)
+        for prop in node.properties:
+            new_node.add_property(prop, getattr(node, prop))
+        self.replace_node(new_node, node)
+        return new_node
+
 
     def add_link(self, n1, n2):
         if (n1, n2) not in self.links:

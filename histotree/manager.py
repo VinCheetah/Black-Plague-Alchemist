@@ -7,7 +7,7 @@ import button
 import pickle
 import os
 from boundedValue import BoundedValue
-from structure import Node, Link, HistoTree, PlaceNode
+from structure import Node, Link, HistoTree, PlaceNode, TalkNode
 import controllerClass
 import window
 
@@ -80,6 +80,12 @@ class HistoTreeManager:
     def debug_window_view_down(self, *args):
         return self.debug_window.window_view_down()
 
+    def tool_window_view_up(self, *args):
+        return self.tool_window.window_view_up()
+
+    def tool_window_view_down(self, *args):
+        return self.tool_window.window_view_down()
+
     def load(self, file_name) -> None:
         file = Path(file_name)
         if not file.parent.exists():
@@ -124,7 +130,9 @@ class HistoTreeManager:
         new_histo_tree = HistoTree()
         update_dict = {}
         for node in self.histo_tree.nodes:
-            update_dict[node] = new_histo_tree.add_node(*node.pos)
+            update_dict[node] = new_histo_tree.add_node(*node.pos, type(node))
+            for prop in node.properties:
+                update_dict[node].add_property(prop, getattr(node, prop))
         for link in self.histo_tree.links:
             new_histo_tree.add_link(update_dict[link.n1], update_dict[link.n2])
         if self.histo_tree.rooted():
@@ -232,6 +240,12 @@ class HistoTreeManager:
             self.update_tools("link")
             self.link_controller.enable()
         self.selection_controller.enable()
+
+    def change_node_type_selected(self):
+        new_type = button.MultiButton.info[self.tool_window.type_button][0]
+        translate_type = {"None": None, "Place": PlaceNode, "Talk": TalkNode}.get(new_type)
+        self.select(self.histo_tree.change_type_node(self.selected, translate_type))
+        self.add_debug(f"I should be changing type of {self.selected} into {translate_type}")
 
     def update_tools(self, mode):
         if not self.hidden_tools:
