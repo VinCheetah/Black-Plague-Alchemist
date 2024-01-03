@@ -219,11 +219,14 @@ class HistoTree:
 
     def change_type_node(self, node, new_type):
         new_node = (new_type or Node)(*node.pos)
-        new_node._name = node._name
-        for prop in node.properties:
-            new_node.add_property(prop, getattr(node, prop))
+        self.transfer_info(new_node, node)
         self.replace_node(new_node, node)
         return new_node
+
+    def transfer_info(self, new_node: Node, old_node: Node):
+        new_node.set_name(old_node._name)
+        for prop in old_node.properties:
+            new_node.add_property(prop, getattr(old_node, prop))
 
 
     def add_link(self, n1, n2):

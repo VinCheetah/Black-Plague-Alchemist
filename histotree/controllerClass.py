@@ -470,8 +470,9 @@ class InsertTextController(Controller):
         self.button = None
 
     def add_enable(self, active_button):
-        self.stop_connection()
-        self.button = active_button
+        if active_button != self.button:
+            self.stop_connection()
+            self.button = active_button
 
     def create_commands(self):
         return ({chr(i): (lambda c=i: self.char_clicked(chr(c))) for i in range(220)} |
@@ -481,6 +482,7 @@ class InsertTextController(Controller):
                 {})
 
     def stop_connection(self):
+        self.manager.add_debug("Stop connect from controller")
         if self.button is not None:
             self.button.clicked = False
             self.button.inaction()

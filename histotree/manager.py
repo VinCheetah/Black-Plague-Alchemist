@@ -132,9 +132,7 @@ class HistoTreeManager:
         update_dict = {}
         for node in self.histo_tree.nodes:
             update_dict[node] = new_histo_tree.add_node(*node.pos, type(node))
-            update_dict[node]._name = node._name
-            for prop in node.properties:
-                update_dict[node].add_property(prop, getattr(node, prop))
+            self.histo_tree.transfer_info(update_dict[node], node)
         for link in self.histo_tree.links:
             new_histo_tree.add_link(update_dict[link.n1], update_dict[link.n2])
         if self.histo_tree.rooted():

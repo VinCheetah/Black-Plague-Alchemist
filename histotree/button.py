@@ -288,8 +288,7 @@ class WriteMultiButton(MultiButton):
 
 
     def action(self):
-        if self.func_action is not None:
-            self.func_action()
+        MultiButton.action(self)
         self.controller.enable(self)
 
     def inaction(self):
