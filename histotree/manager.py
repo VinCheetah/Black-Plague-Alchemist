@@ -7,7 +7,7 @@ import button
 import pickle
 import os
 from boundedValue import BoundedValue
-from structure import Node, Link, HistoTree, PlaceNode, TalkNode
+from structure import Node, Link, HistoTree, PlaceNode, TalkNode, FightNode, ChoiceNode
 import controllerClass
 import window
 
@@ -46,6 +46,7 @@ class HistoTreeManager:
         self.clock = pygame.time.Clock()
 
         self.controllers = list()
+        self.insert_text_controller: controllerClass.InsertTextController = controllerClass.InsertTextController(self)
         self.properties_controller: controllerClass.PropertiesController = controllerClass.PropertiesController(self)
         self.debug_controller: controllerClass.DebugController = controllerClass.DebugController(self)
         self.tool_controller: controllerClass.ToolController = controllerClass.ToolController(self)
@@ -60,7 +61,7 @@ class HistoTreeManager:
         self.tool_window: window.ToolWindow = window.ToolWindow(self, self.tool_controller, width=self.tool_size, height=self.height - self.debug_height)
         self.menu_window: window.MenuWindow = window.MenuWindow(self, self.menu_controller, width=self.width, height=self.height)
         self.main_window: window.MainWindow = window.MainWindow(self, self.main_controller, width=self.width - self.tool_size, height=self.height, x=self.tool_size)
-        self.debug_window: window.DebugWindow = window.DebugWindow(self, self.debug_controller, width=self.tool_size-10, height=self.debug_height-10, x=5, y =self.height-self.debug_height-5)
+        self.debug_window: window.DebugWindow = window.DebugWindow(self, self.debug_controller, width=self.tool_size-10, height=self.debug_height-10, x=5, y =self.height-self.debug_height+5)
 
         self.menu_window.set_window()
 
@@ -131,6 +132,7 @@ class HistoTreeManager:
         update_dict = {}
         for node in self.histo_tree.nodes:
             update_dict[node] = new_histo_tree.add_node(*node.pos, type(node))
+            update_dict[node]._name = node._name
             for prop in node.properties:
                 update_dict[node].add_property(prop, getattr(node, prop))
         for link in self.histo_tree.links:
@@ -236,16 +238,22 @@ class HistoTreeManager:
         if isinstance(selected, Node):
             self.update_tools("node")
             self.node_controller.enable()
+            self.update_buttons()
         elif isinstance(selected, Link):
             self.update_tools("link")
             self.link_controller.enable()
         self.selection_controller.enable()
 
+    def update_buttons(self):
+        self.tool_window.name_button.value = self.selected._name or ""
+        self.tool_window.type_button.set_value(self.selected.type)
+        if hasattr(self.selected.type, "place"):
+            self.properties_window.place_button.set_value(self.selected.place)
+
     def change_node_type_selected(self):
         new_type = button.MultiButton.info[self.tool_window.type_button][0]
-        translate_type = {"None": None, "Place": PlaceNode, "Talk": TalkNode}.get(new_type)
+        translate_type = {"None": None, "Place": PlaceNode, "Talk": TalkNode, "Fight": FightNode, "Choice": ChoiceNode}.get(new_type)
         self.select(self.histo_tree.change_type_node(self.selected, translate_type))
-        self.add_debug(f"I should be changing type of {self.selected} into {translate_type}")
 
     def update_tools(self, mode):
         if not self.hidden_tools:

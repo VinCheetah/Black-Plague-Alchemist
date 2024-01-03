@@ -1,33 +1,32 @@
 import pygame
-
 import color
 
 
 class Button:
 
-    def __init__(self, window, x=0, y=0, label="", height=100, width=250, value=None, func_action=None, func_inaction=None, size=None):
+    def __init__(self, window, x=0., y=0., label="", height=100, width=250, value=None, func_action=None, func_inaction=None, size=None):
         self.manager = window.manager
         self.window = window
         self.label = label
-        self.height = height
-        self.width = width-1
+        self.height: int = height
+        self.width: int = width-1
         self.value = value
         self.func_action = func_action
         self.func_inaction = func_inaction
+        self.clicked: bool = False
 
         self.policy = "monospace"
-        self.size = size or 30
-        self.line_color = color.LIGHT_GREY
-        self.clicked_color = color.DARK_GREY_1
-        self.under_mouse_color = color.DARK_GREY_2
-        self.unclicked_color = color.DARK_GREY_3
+        self.size: int = size or 30
+        self.line_color: color.Tcolor = color.LIGHT_GREY
+        self.clicked_color: color.Tcolor = color.DARK_GREY_1
+        self.under_mouse_color: color.Tcolor = color.DARK_GREY_2
+        self.unclicked_color: color.Tcolor = color.DARK_GREY_3
 
         self.screen = self.window.window
         self.x, self.y = self.get_coord(x, y)
         self.rect = pygame.Rect(self.x - self.width / 2, self.y - self.height / 2, self.width, self.height)
-        self.clicked = False
 
-    def get_coord(self, x, y):
+    def get_coord(self, x, y) -> tuple[float, float]:
         if type(x) is str:
             x = {"left": 0 + self.window.border_x + self.width / 2,
                  "right": self.window.width - self.window.border_x - self.width / 2,
@@ -38,8 +37,7 @@ class Button:
                  "center": self.window.height / 2}.get(y)
         return x, y
 
-    def display(self):
-        self.window.content_height = max(self.window.content_height, self.y + self.height / 2)
+    def display(self) -> None:
         x, y = self.x - self.width / 2 - self.window.view_x, self.y - self.height / 2 - self.window.view_y
         pygame.draw.rect(self.screen, self.color, pygame.Rect(x, y, self.width, self.height))
         pygame.draw.line(self.screen, self.line_color, (x, y), (x + self.width, y))
@@ -61,13 +59,13 @@ class Button:
     def screen_label(self) -> str:
         return self.label
 
-    def collide(self, x, y):
+    def collide(self, x, y) -> bool:
         return 0 <= x - self.x + self.width / 2 - self.window.x + self.window.view_x <= self.width and 0 <= y - self.y + self.height / 2 - self.window.y + self.window.view_y <= self.height
 
-    def collide_mouse(self):
+    def collide_mouse(self) -> bool:
         return self.collide(self.manager.mouse_x, self.manager.mouse_y)
 
-    def is_clicked(self, x, y):
+    def is_clicked(self, x, y) -> bool:
         if self.collide(x, y):
             self.clicked = not self.clicked
             if self.clicked:
@@ -77,11 +75,11 @@ class Button:
             return True
         return False
 
-    def inaction(self):
+    def inaction(self) -> None:
         if self.func_inaction is not None:
             self.func_inaction()
 
-    def action(self):
+    def action(self) -> None:
         if self.func_action is not None:
             self.func_action()
         self.value = not self.value
@@ -91,7 +89,7 @@ class Button:
         self.clicked = False
 
     @property
-    def color(self):
+    def color(self) -> color.Tcolor:
         if self.clicked:
             return self.clicked_color
         if self.collide_mouse():
@@ -99,7 +97,7 @@ class Button:
         else:
             return self.unclicked_color
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Button : {self.label} (clicked : {self.clicked})"
 
 
@@ -120,8 +118,9 @@ class MultiButton(Button):
     def apply_click(self):
         self.clicked = True
         if self.info[self.key] is not None:
-            self.info.get(self.key)[1].unselect()
-            self.info.get(self.key)[1].inaction()
+            if self.info[self.key][1] is not None:
+                self.info.get(self.key)[1].unselect()
+                self.info.get(self.key)[1].inaction()
         self.info[self.key] = (self.value, self)
 
     def action(self):
@@ -188,10 +187,11 @@ class OptionButton(Button):
         return str(self.options[0].info[self][0]) if self.options[0].info[self] is not None else self.label
 
 
-class MultiOptionButton(MultiButton):
+
+class OptionMultiButton(MultiButton):
 
     def __init__(self, window, x=0, y=0, label="", height=100, width=250, value=None, options=None, option_height=None, option_width=None, key="", clicked=False, option_size=None, option_fun_action=None, option_fun_inaction=None, init_clicked=None, pos="down"):
-        MultiButton.__init__(self, window, x, y, label, height, width, value, self.main_clicked, self.main_unclicked, key, False)
+        MultiButton.__init__(self, window, x, y, label, height, width, value, self.main_clicked, self.main_unclicked, key, clicked)
         options = options or ["..."]
         match pos:
             case "down":
@@ -240,5 +240,62 @@ class MultiOptionButton(MultiButton):
         for option in self.options:
             self.window.erase_button(option)
 
+    def get_value(self):
+        return self.info[self][0] if self.info[self] is not None else None
+
+    def set_value(self, value):
+        if value is not None:
+            for button in self.options:
+                if button.value == value:
+                    button.apply_click()
+                else:
+                    self.clicked = False
+            else:
+                self.info[self] = value, None
+        else:
+            self.info[self] = None
+
     def screen_label(self) -> str:
         return str(self.options[0].info[self][0]) if self.options[0].info[self] is not None else self.label
+
+
+class WriteButton(Button):
+
+    def __init__(self, window, x=0, y=0, label="", height=100, width=250, value="", func_action=None, func_inaction=None, size=None, controller=None):
+        Button.__init__(self, window, x, y, label, height, width, value, func_action, func_inaction, size)
+        self.controller = controller or self.manager.insert_text_controller
+
+
+    def action(self):
+        if self.func_action is not None:
+            self.func_action()
+        self.controller.enable(self)
+
+    def inaction(self):
+        if self.func_inaction is not None:
+            self.func_inaction()
+        self.controller.disable()
+
+    def screen_label(self) -> str:
+        return self.value or self.label
+
+
+class WriteMultiButton(MultiButton):
+
+    def __init__(self, window, x=0, y=0, label="", height=100, width=250, value="", func_action=None, func_inaction=None, key="", clicked=False,  size=None, controller=None):
+        MultiButton.__init__(self, window, x, y, label, height, width, value, func_action, func_inaction, key, clicked, size)
+        self.controller = controller or self.manager.insert_text_controller
+
+
+    def action(self):
+        if self.func_action is not None:
+            self.func_action()
+        self.controller.enable(self)
+
+    def inaction(self):
+        if self.func_inaction is not None:
+            self.func_inaction()
+        self.controller.disable()
+
+    def screen_label(self) -> str:
+        return self.value or self.label

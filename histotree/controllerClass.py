@@ -66,11 +66,11 @@ class Controller:
     def create_commands(self):
         return {}, {}, {}
 
-    def enable(self):
+    def enable(self, *args):
         self.active = True
-        self.add_enable()
+        self.add_enable(*args)
 
-    def add_enable(self):
+    def add_enable(self, *args):
         pass
 
     def disable(self):
@@ -85,12 +85,6 @@ class Controller:
             if button.is_clicked(*args):
                 return True
         return False
-
-    def check_under_mouse(self, *args):
-        return False
-
-        for button in self.buttons:
-            button.under_mouse()
 
     def clicked_node(self, p, extension=1.):
         sel_node, dist = None, inf
@@ -123,6 +117,9 @@ class MainController(Controller):
                 pygame.K_ESCAPE: self.manager.start_menu,
 
                 "m": self.manager.start_menu,
+
+                "n": self.manager.insert_text_controller.enable,
+
                 "s": self.manager.favorite_save,
                 "p": self.manager.print_histo_tree,
                 "f": self.flip_tool,
@@ -239,7 +236,6 @@ class MenuController(Controller):
         return (
             {
                 "_l_click": self.left_click,
-                "_MOUSE_MOTION": self.mouse_motion,
 
                 "q": self.show_controllers,
 
@@ -262,9 +258,6 @@ class MenuController(Controller):
     def left_click(self, *args):
         return self.check_buttons(*args)
 
-    def mouse_motion(self, *args):
-        self.check_under_mouse(*args)
-        
         
 class SelectionController(Controller):
 
@@ -363,7 +356,6 @@ class ToolController(Controller):
         return (
             {
                 "_l_click": self.left_click,
-                "_MOUSE_MOTION": self.mouse_motion,
 
                 "_d_up_click": self.manager.tool_window_view_up,
                 "_d_down_click": self.manager.tool_window_view_down,
@@ -411,8 +403,6 @@ class ToolController(Controller):
                         self.aux = node
                     return True
 
-    def mouse_motion(self, *args):
-        self.check_under_mouse(*args)
 
 
 class DebugController(Controller):
@@ -457,8 +447,6 @@ class PropertiesController(Controller):
             {
                 "_l_click": self.left_click,
 
-                "_MOUSE_MOTION": self.mouse_motion,
-
                 #"_d_up_click": self.manager.debug_window_view_up,
                 #"_d_down_click": self.manager.debug_window_view_down,
 
@@ -472,5 +460,35 @@ class PropertiesController(Controller):
     def left_click(self, *args):
         return self.check_buttons(*args)
 
-    def mouse_motion(self, *args):
-        return self.check_under_mouse()
+
+
+class InsertTextController(Controller):
+
+    name = "Insert Text Controller"
+
+    def add_init(self):
+        self.button = None
+
+    def add_enable(self, active_button):
+        self.stop_connection()
+        self.button = active_button
+
+    def create_commands(self):
+        return ({chr(i): (lambda c=i: self.char_clicked(chr(c))) for i in range(220)} |
+                {pygame.K_BACKSPACE: self.delete_last,
+                 pygame.K_RETURN: self.stop_connection},
+                {},
+                {})
+
+    def stop_connection(self):
+        if self.button is not None:
+            self.button.clicked = False
+            self.button.inaction()
+            self.button = None
+
+    def char_clicked(self, char):
+        self.button.value += char
+
+    def delete_last(self):
+        if len(self.button.value) > 0:
+            self.button.value = self.button.value[:-1]

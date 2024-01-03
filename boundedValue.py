@@ -44,6 +44,12 @@ class BoundedValue(object):
     def unbound(self):
         self.set_extremum(-inf, inf)
 
+    def is_max(self):
+        return self.max == self.value
+
+    def is_min(self):
+        return self.min == self.value
+
     def __setattr__(self, key, value, check=True):
         if key == "value":
             super().__setattr__(key, min(max(value, self.min), self.max))

@@ -1,7 +1,7 @@
 import pygame
 import color
 import boundedValue
-from button import Button, OptionButton, MultiButton, MultiOptionButton
+from button import Button, OptionButton, MultiButton, OptionMultiButton, WriteButton, WriteMultiButton
 import math
 
 
@@ -62,6 +62,13 @@ class Window:
             return True
         return False
 
+    def get_font(self, size=None):
+        if size is None:
+            return self.font
+        else:
+            return pygame.font.SysFont("Courier New", size)
+
+
     def window_view_up(self):
         if self.moveable and self.collide_mouse():
             self.view_y -= 4
@@ -70,7 +77,7 @@ class Window:
         return False
 
     def check_down(self):
-        if self.view_y == max(0, self.content_height - self.height):
+        if self.view_y.is_max():
             self.down = True
         else:
             self.down = False
@@ -113,7 +120,7 @@ class Window:
 
     def update_extremum_view(self):
         self.view_x.set_max(0)
-        self.view_y.set_max(max(0, self.content_height - self.height))
+        self.view_y.set_max(max(0, max([(button.y + button.height / 2 + 1) for button in self.buttons] + [self.content_height]) - self.height))
 
     def format_text(self, text, font, x_space=5, y_space=5):
         text_surface = pygame.Surface((self.width, self.height))
@@ -218,12 +225,13 @@ class Window:
 
 class MenuWindow(Window):
     def additionnal_init(self):
-        self.start_button = Button(self, "center", 3 * self.height / 4 , "START", value=True, func_action=self.manager.start_main)
+        self.start_button = Button(self, "center", 3 * self.height / 4, "START", value=True,
+                                   func_action=self.manager.start_main)
         self.new_button(self.start_button)
 
         self.auto_save_button = MultiButton(self, self.width / 5, "center", "AUTO SAVE", value="auto", key="import_histotree")
         self.crash_save_button = MultiButton(self, 2 * self.width / 5, "center", "CRASH SAVE", value="crash", key="import_histotree")
-        self.select_save_button = MultiOptionButton(self, 3 * self.width / 5, "center", "SELECT SAVE", value="select", key="import_histotree", option_height=40, options=[file.name for file in self.manager.get_tree_files()], option_size=20)
+        self.select_save_button = OptionMultiButton(self, 3 * self.width / 5, "center", "SELECT SAVE", value="select", key="import_histotree", option_height=40, options=[file.name for file in self.manager.get_tree_files()], option_size=20)
         self.favorite_save_button = MultiButton(self, 4 * self.width / 5, "center", "FAVORITE SAVE", value="favorite", key="import_histotree", clicked=True)
         self.new_button(self.auto_save_button)
         self.new_button(self.crash_save_button)
@@ -257,6 +265,9 @@ class MainWindow(Window):
             pygame.draw.polygon(self.content, link.color if link != self.manager.selected else (255, 0, 0), self.manager.list_view([end, arrowhead1, arrowhead2]))
         for node in self.manager.histo_tree.nodes:
             pygame.draw.circle(self.content, node.color if node != self.manager.selected else (255, 0, 0), self.manager.view(node.pos), node.size * self.manager.zoom)
+            if node.name is not None:
+                text = self.get_font(int(node.size_text * self.manager.zoom)).render(node.name, True, color.WHITE)
+                self.content.blit(text, self.manager.view((node.x - text.get_width() / 2 / self.manager.zoom, node.y - text.get_height() / 2 / self.manager.zoom)))
         if self.manager.histo_tree.rooted():
             pygame.draw.circle(self.content, self.root_color, self.manager.view(self.manager.histo_tree.root.pos), self.manager.histo_tree.root.size * self.manager.zoom * 1.2, int(3 * self.manager.zoom))
 
@@ -290,11 +301,15 @@ class ToolWindow(Window):
 
         self.link_to_button = MultiButton(self, self.width / 2, self.height_button * (0 + .5), "LINK", self.height_button, self.width, "link", key="node_tool")
         self.birth_button = MultiButton(self, self.width / 2, self.height_button * (1 + .5), "DESCENDANT", self.height_button, self.width, "birth", key="node_tool")
-        self.type_button = MultiOptionButton(self, self.width / 2, self.height_button * (3 + .5), "TYPE", self.height_button, self.width, "type", ["None", "Place", "Talk", "Fight", "Choice"], option_height=30, key="node_tool", option_fun_action=self.manager.change_node_type_selected)
+        self.type_button = OptionMultiButton(self, self.width / 2, self.height_button * (4 + .5), "TYPE", self.height_button, self.width, "type", ["None", "Place", "Talk", "Fight", "Choice"], option_height=30, key="node_tool", option_fun_action=self.manager.change_node_type_selected)
         self.properties_tool = MultiButton(self, self.width / 2, self.height_button * (2 + .5), "PROPERTIES", self.height_button, self.width, "properties", key="node_tool", func_action=self.manager.properties_window.add_windows, func_inaction=self.manager.properties_window.retire_windows)
-        self.node_tools = {self.link_to_button, self.birth_button, self.properties_tool, self.type_button}
+        self.name_button = WriteMultiButton(self, self.width / 2, self.height_button * (3 + .5), "NAME", self.height_button, self.width, "", key="node_tool", func_inaction=self.set_name)
+        self.node_tools = {self.link_to_button, self.birth_button, self.properties_tool, self.type_button, self.name_button}
 
         self.link_tools = set()
+
+    def set_name(self):
+        self.manager.selected.set_name(self.name_button.value)
 
     def add_add_windows(self):
         match self.mode:
@@ -325,10 +340,10 @@ class DebugWindow(Window):
         self.down = True
 
     def update_content(self):
-        if self.down:
-            self.view_y.set_value(max(0, self.content_height - self.height))
         self.content, self.content_height = self.format_text(self.text, self.font)
         self.update_extremum_view()
+        if self.down:
+            self.view_y += 100
 
     def add_text(self, text):
         self.text += text
@@ -346,6 +361,8 @@ class PropertiesWindow(Window):
 
     def additionnal_init(self):
         self.current_buttons = set()
+
+        self.name_button = OptionButton(self, 400, 400, "")
 
         self.place_button = OptionButton(self, 400, 400, "Select a Place", 50, options=["Maison", "Chateau", "Temple"], init_clicked=(lambda x: x.value == self.manager.selected.place), option_fun_action=(lambda: setattr(self.manager.selected, "place", MultiButton.info[self.place_button][0])))
         self.place_buttons = {self.place_button}

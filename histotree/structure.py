@@ -1,6 +1,10 @@
 import pygame
 
 from math import sqrt, atan2
+
+import color
+
+
 class Condition:
     pass
 
@@ -26,16 +30,28 @@ class Node:
         self.size = 40
         self.color = 170, 130, 40
 
-        self.name: str = f"Node {self.id}"
+        self._name = None
+        self.type = None
         self.outs: list[tuple[id, list[Condition], int]] = []
         self.add_init()
+        self.set_name()
 
     def add_init(self):
         pass
 
     def set_id(self, new_id):
         self.id = new_id
-        self.name = f"Node {self.id}"
+
+    def set_name(self, new_name=None):
+        self._name = new_name or self._name
+        size = 30
+        while 1.7 * self.size < pygame.font.SysFont("Courier New", size).render(self.name, True, color.WHITE).get_width():
+            size -= 1
+        self.size_text = size
+
+    @property
+    def name(self):
+        return self._name or f"Node {self.id}"
 
     def add_dialogue(self, dialogue: str):
         self.dialogues.append(dialogue)
@@ -80,6 +96,7 @@ class FightNode(Node):
     def add_init(self):
         self.size = 50
         self.color = 40, 120, 110
+        self.type = "Fight"
 
 
 class TalkNode(Node):
@@ -87,6 +104,7 @@ class TalkNode(Node):
     def add_init(self):
         self.size = 30
         self.color = 170, 30, 130
+        self.type = "Talk"
         self.add_property("speaker", "")
         self.add_property("messages", [])
 
@@ -95,8 +113,15 @@ class PlaceNode(Node):
 
     def add_init(self):
         self.color = 30, 170, 140
+        self.type = "Place"
         self.add_property("place", "")
         self.add_property("subplace", "")
+
+class ChoiceNode(Node):
+
+    def add_init(self):
+        self.color = 230, 160, 100
+        self.type = "Choice"
 
 class Link:
     _id = 0
@@ -194,6 +219,7 @@ class HistoTree:
 
     def change_type_node(self, node, new_type):
         new_node = (new_type or Node)(*node.pos)
+        new_node._name = node._name
         for prop in node.properties:
             new_node.add_property(prop, getattr(node, prop))
         self.replace_node(new_node, node)
